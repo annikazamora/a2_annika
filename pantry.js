@@ -10,28 +10,65 @@
 // ------------------------------
 // drawPantry() is called from main.js
 // only when currentScreen === "pantry"
+let flourCounter = 0;
+let waterCounter = 0;
+let starterCounter = 0;
+let saltCounter = 0;
+
 function drawPantry() {
   // Light neutral background
   background(240);
 
-  // ---- Screen title ----
-  fill(0);
-  textAlign(CENTER, TOP);
-  textSize(36);
-  text("Instructions", width / 2, 80);
+  // ---- Draw shelves ----
+  fill(184, 164, 126); // shelf color
+  const shelfHeight = 20;
+  const shelfYs = [height * 0.5, height * 0.9];
+  shelfYs.forEach((y) => {
+    rect(width / 2, y, width, shelfHeight);
+  });
 
-  // ---- Instruction text ----
-  textSize(18);
+  // ---- INGREDIENTS ----
+  // flour
+  const flourBagWidthBtn = 120;
+  const flourBagHeightBtn = 180;
+  const flourBagXBtn = width * 0.25;
+  const flourBagYBtn = shelfYs[0] - flourBagHeightBtn / 2;
 
-  // \n creates a line break in the text
-  // This is useful for simple multi-line instructions
-  const lines =
-    "Press the game button.\n" + "You have a chance to win or lose!";
+  // water
+  const waterBtn = {
+    w: 120,
+    h: 180,
+    x: width * 0.5,
+    y: shelfYs[0] - 90,
+    label: "Water",
+  };
 
-  text(lines, width / 2, 160);
+  // sourdough starter
+  const starterBtn = {
+    w: 80,
+    h: 140,
+    x: width * 0.25,
+    y: shelfYs[1] - 70,
+    label: "Starter",
+  };
 
-  // ---- Back button ----
-  // This button lets the player return to the home screen
+  // salt
+  const saltBtn = {
+    w: 50,
+    h: 100,
+    x: width * 0.75,
+    y: shelfYs[1] - 50,
+    label: "Salt",
+  };
+
+  // Draw all buttons
+  drawButton(waterBtn);
+  drawButton(starterBtn);
+  drawButton(saltBtn);
+
+  text(waterCounter, waterBtn.x, waterBtn.y + 20);
+  text(saltCounter, saltBtn.x, saltBtn.y + 20);
+  text(starterCounter, starterBtn.x, starterBtn.y + 20);
 }
 
 // ------------------------------
@@ -39,12 +76,28 @@ function drawPantry() {
 // ------------------------------
 // Called from main.js only when currentScreen === "pantry"
 function pantryMousePressed() {
-  // Button data must match the draw position
   const backBtn = { x: width / 2, y: 560, w: 220, h: 70 };
+
+  const waterBtn = { x: width * 0.5, y: height * 0.5 - 90, w: 120, h: 180 };
+  const starterBtn = { x: width * 0.25, y: height * 0.9 - 70, w: 80, h: 140 };
+  const saltBtn = { x: width * 0.75, y: height * 0.9 - 50, w: 50, h: 100 };
 
   // If the button is clicked, return to the home screen
   if (isHover(backBtn)) {
     currentScreen = "home";
+    return;
+  }
+
+  //checks if ingredients are clicked
+  if (isHover(starterBtn)) {
+    starterCounter++;
+  }
+  if (isHover(saltBtn)) {
+    saltCounter++;
+  }
+
+  if (isHover(waterBtn)) {
+    waterCounter++;
   }
 }
 

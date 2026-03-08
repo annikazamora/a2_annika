@@ -5,7 +5,7 @@
 ## Authors
 
 - Paige Gugeler
--
+- Annika Zamora
 -
 -
 -
