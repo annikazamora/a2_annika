@@ -1,125 +1,310 @@
-// NOTE: Do NOT add setup() or draw() in this file
-// setup() and draw() live in main.js
-// This file only defines:
-// 1) drawWorkbench() → what the workbench screen looks like
-// 2) input handlers → what happens when the player clicks or presses keys
-// 3) helper functions specific to this screen
+// ------------------------------
+// WORKBENCH SCREEN
+// ------------------------------
 
-// ------------------------------
-// Button data
-// ------------------------------
-// This object stores all the information needed to draw
-// and interact with the button on the workbenchscreen.
-// Keeping this in one object makes it easier to move,
-// resize, or restyle the button later.
-const workBtn = {
-  x: 400, // x position (centre of the button)
-  y: 550, // y position (centre of the button)
-  w: 260, // width
-  h: 90, // height
-  label: "PRESS HERE", // text shown on the button
+const BREAD_RECIPE = { water: 2, starter: 1, salt: 1 };
+
+const INGREDIENT_STYLES = {
+  water: { bg: [180, 220, 255], label: "WATER", emoji: "💧" },
+  starter: { bg: [245, 225, 185], label: "STARTER", emoji: "🫙" },
+  salt: { bg: [240, 240, 240], label: "SALT", emoji: "🧂" },
 };
 
-// ------------------------------
-// Main draw function for this screen
-// ------------------------------
-// drawGame() is called from main.js *only*
-// when currentScreen === "workbench"
-function drawWorkbench() {
-  // Set background colour for the workbench screen
-  background(240, 230, 140);
+let wbIngredients = [];
+let wbBowl = {};
+let wbContents = {};
+let wbDragging = null;
+let wbMessage = "";
+let wbMessageTimer = 0;
 
-  // ---- Title and instructions text ----
-  fill(0); // black text
-  textSize(32);
-  textAlign(CENTER, CENTER);
-  text("Workbench Screen", width / 2, 160);
+function initWorkbench() {
+  wbContents = {};
+  wbDragging = null;
+  wbMessage = "";
+  wbMessageTimer = 0;
 
-  textSize(18);
-  text(
-    "Click the button (or press ENTER) for a random result.",
-    width / 2,
-    210,
-  );
+  wbBowl = { x: width / 2, y: height / 2 + 20, w: 200, h: 130 };
 
-  // ---- Draw the button ----
-  // We pass the button object to a helper function
-  drawWorkbenchButton(workBtn);
-
-  // ---- Cursor feedback ----
-  // If the mouse is over the button, show a hand cursor
-  // Otherwise, show the normal arrow cursor
-  cursor(isHover(workBtn) ? HAND : ARROW);
+  wbIngredients = [];
+  const names = Object.keys(INGREDIENT_STYLES);
+  names.forEach((name, i) => {
+    wbIngredients.push({
+      name,
+      x: 75 + i * 110,
+      y: 250,
+      w: 90,
+      h: 75,
+      count: 3,
+    });
+  });
 }
 
-// ------------------------------
-// Button drawing helper
-// ------------------------------
-// This function is responsible *only* for drawing the button.
-// It does NOT handle clicks or game logic.
-function drawWorkbenchButton({ x, y, w, h, label }) {
+function drawWorkbench() {
+  background(240, 225, 200);
+
+  drawWbIngredients();
+  drawWbBowl();
+  drawWbBowlContents();
+  drawWbRecipe();
+  drawWbBakeButton();
+  drawWbDragging();
+  drawWbMessage();
+
+  cursor(wbIsOverIngredient() ? HAND : ARROW);
+}
+
+function drawWbIngredients() {
+  for (const ing of wbIngredients) {
+    if (wbDragging && wbDragging.name === ing.name) continue;
+    drawWbToken(ing.x, ing.y, ing.w, ing.h, ing.name, ing.count);
+  }
+}
+
+function drawWbToken(x, y, w, h, name, count) {
+  const style = INGREDIENT_STYLES[name];
+  const empty = count <= 0;
   rectMode(CENTER);
 
-  // Check if the mouse is hovering over the button
-  // isHover() is defined in main.js so it can be shared
-  const hover = isHover({ x, y, w, h });
+  // Shadow
+  fill(0, 0, 0, 25);
+  noStroke();
+  rect(x + 3, y + 4, w, h, 10);
 
+  // Body
+  fill(empty ? color(200, 200, 200) : color(...style.bg));
+  stroke(empty ? color(170, 170, 170) : color(0, 0, 0, 40));
+  strokeWeight(1.5);
+  rect(x, y, w, h, 10);
+
+  // Text
+  noStroke();
+  fill(empty ? 160 : 60);
+  textAlign(CENTER, CENTER);
+  textSize(22);
+  text(style.emoji, x, y + 5);
+  textSize(10);
+  text(style.label, x, y - 20);
+
+  if (!empty) {
+    textSize(10);
+    fill(80, 40, 10);
+    text(`×${count}`, x + w / 2 - 12, y - h / 2 + 10);
+  }
+
+  rectMode(CORNER);
+}
+
+function drawWbBowl() {
+  const { x, y, w, h } = wbBowl;
+
+  // Shadow
+  fill(0, 0, 0, 35);
+  noStroke();
+  ellipse(x, y + h * 0.5, w + 20, 18);
+
+  // Bowl
+  fill(232, 215, 195);
+  stroke(150, 110, 70);
+  strokeWeight(3);
+  arc(x, y, w, h, 0, PI, CHORD);
+  ellipse(x, y, w, h * 0.28);
+
+  // Inner
+  fill(215, 198, 178, 150);
+  noStroke();
+  ellipse(x, y, w - 20, h * 0.2);
+
+  // Label
+  fill(120, 75, 30);
+  noStroke();
+  textSize(11);
+  textAlign(CENTER, CENTER);
+  text("drop ingredients here", x, y + h * 0.58);
+}
+
+function drawWbBowlContents() {
+  const { x, y } = wbBowl;
+  const items = Object.entries(wbContents).filter(([, c]) => c > 0);
+  if (items.length === 0) return;
+
+  let ix = x - (items.length * 26) / 2 + 13;
+  for (const [name, count] of items) {
+    noStroke();
+    textSize(14);
+    textAlign(CENTER, CENTER);
+    text(INGREDIENT_STYLES[name].emoji, ix, y - 8);
+    fill(60, 30, 10);
+    textSize(9);
+    text(`×${count}`, ix, y + 7);
+    ix += 26;
+  }
+}
+
+function drawWbRecipe() {
+  const x = width - 200,
+    y = 110,
+    w = 165,
+    h = 175;
+
+  fill(255, 248, 215);
+  stroke(190, 150, 90);
+  strokeWeight(2);
+  rect(x, y, w, h, 8);
+
+  fill(80, 40, 10);
+  noStroke();
+  textSize(13);
+  textAlign(CENTER, TOP);
+  text("📋 RECIPE", x + w / 2, y + 10);
+
+  stroke(200, 170, 110);
+  strokeWeight(1);
+  line(x + 10, y + 30, x + w - 10, y + 30);
   noStroke();
 
-  // Change button colour when hovered
-  // This gives visual feedback to the player
-  fill(
-    hover
-      ? color(180, 220, 255, 220) // lighter blue on hover
-      : color(200, 220, 255, 190), // normal state
-  );
+  textSize(11);
+  let ty = y + 38;
+  for (const [name, needed] of Object.entries(BREAD_RECIPE)) {
+    const have = wbContents[name] || 0;
+    const done = have >= needed;
+    fill(done ? color(50, 140, 50) : color(80, 40, 10));
+    textAlign(LEFT, TOP);
+    text(
+      `${done ? "✓" : "○"} ${INGREDIENT_STYLES[name].emoji} ${INGREDIENT_STYLES[name].label}`,
+      x + 10,
+      ty,
+    );
+    fill(done ? color(50, 140, 50) : color(180, 60, 60));
+    textAlign(RIGHT, TOP);
+    text(`${have}/${needed}`, x + w - 10, ty);
+    ty += 40;
+  }
+}
 
-  // Draw the button rectangle
-  rect(x, y, w, h, 14); // last value = rounded corners
-
-  // Draw the button text
-  fill(0);
-  textSize(28);
+function drawWbBakeButton() {
+  const btn = wbGetBtn();
+  const hover = isHover(btn);
+  rectMode(CORNER);
+  fill(hover ? color(90, 175, 65) : color(70, 150, 50));
+  stroke(40, 100, 30);
+  strokeWeight(2);
+  rect(btn.x, btn.y, btn.w, btn.h, 10);
+  fill(255);
+  noStroke();
+  textSize(15);
   textAlign(CENTER, CENTER);
-  text(label, x, y);
+  text("✓ BAKE BREAD!", btn.x + btn.w / 2, btn.y + btn.h / 2);
+  rectMode(CORNER);
 }
 
-// ------------------------------
-// Mouse input for this screen
-// ------------------------------
-// This function is called from main.js
-// only when currentScreen === "workbench"
+function drawWbDragging() {
+  if (!wbDragging) return;
+  drawWbToken(
+    wbDragging.x,
+    wbDragging.y,
+    90,
+    75,
+    wbDragging.name,
+    wbDragging.count,
+  );
+}
+
+function drawWbMessage() {
+  if (wbMessageTimer <= 0) return;
+  wbMessageTimer--;
+  const a = map(wbMessageTimer, 0, 60, 0, 255);
+  fill(80, 40, 10, a);
+  noStroke();
+  textSize(15);
+  textAlign(CENTER, CENTER);
+  text(wbMessage, width / 2, height - 60);
+}
+
+function wbGetBtn() {
+  return { x: width / 2 - 85, y: height - 55, w: 170, h: 42 };
+}
+
+function wbIsOverIngredient() {
+  for (const ing of wbIngredients) {
+    if (
+      ing.count > 0 &&
+      mouseX > ing.x - ing.w / 2 &&
+      mouseX < ing.x + ing.w / 2 &&
+      mouseY > ing.y - ing.h / 2 &&
+      mouseY < ing.y + ing.h / 2
+    )
+      return true;
+  }
+  return false;
+}
+
+function wbInsideBowl(px, py) {
+  const { x, y, w, h } = wbBowl;
+  const dx = (px - x) / (w / 2);
+  const dy = (py - y) / (h / 2 + 30);
+  return dx * dx + dy * dy < 1.2;
+}
+
 function workbenchMousePressed() {
-  // Only trigger the outcome if the button is clicked
-  if (isHover(workBtn)) {
-    triggerRandomOutcome();
+  for (const ing of wbIngredients) {
+    if (
+      ing.count > 0 &&
+      mouseX > ing.x - ing.w / 2 &&
+      mouseX < ing.x + ing.w / 2 &&
+      mouseY > ing.y - ing.h / 2 &&
+      mouseY < ing.y + ing.h / 2
+    ) {
+      wbDragging = {
+        name: ing.name,
+        x: mouseX,
+        y: mouseY,
+        count: ing.count,
+        source: ing,
+      };
+      return;
+    }
+  }
+  if (isHover(wbGetBtn())) wbCheckRecipe();
+}
+
+function workbenchMouseDragged() {
+  if (wbDragging) {
+    wbDragging.x = mouseX;
+    wbDragging.y = mouseY;
   }
 }
 
-// ------------------------------
-// Keyboard input for this screen
-// ------------------------------
-// Allows keyboard-only interaction (accessibility + design)
+function workbenchMouseReleased() {
+  if (!wbDragging) return;
+  if (wbInsideBowl(mouseX, mouseY)) {
+    const name = wbDragging.name;
+    wbContents[name] = (wbContents[name] || 0) + 1;
+    wbDragging.source.count--;
+    wbMessage = `Added ${INGREDIENT_STYLES[name].emoji} ${INGREDIENT_STYLES[name].label}!`;
+    wbMessageTimer = 80;
+  }
+  wbDragging = null;
+}
+
 function workbenchKeyPressed() {
-  // ENTER key triggers the same behaviour as clicking the button
-  if (keyCode === ENTER) {
-    triggerRandomOutcome();
-  }
+  if (keyCode === ENTER) wbCheckRecipe();
 }
 
-// This function decides what happens next in the game.
-// It does NOT draw anything.
-function triggerRandomOutcome() {
-  // random() returns a value between 0 and 1
-  // Here we use a 50/50 chance:
-  // - less than 0.5 → win
-  // - 0.5 or greater → lose
-  //
-  // You can bias this later, for example:
-  // random() < 0.7 → 70% chance to win
-  if (random() < 0.5) {
-    currentScreen = "win";
+function wbCheckRecipe() {
+  const missing = [],
+    excess = [];
+  for (const [name, needed] of Object.entries(BREAD_RECIPE)) {
+    const have = wbContents[name] || 0;
+    if (have < needed) missing.push(INGREDIENT_STYLES[name].label);
+    else if (have > needed) excess.push(INGREDIENT_STYLES[name].label);
+  }
+  if (missing.length === 0 && excess.length === 0) {
+    currentScreen = "oven";
+  } else if (missing.length > 0) {
+    wbMessage = `Missing: ${missing.join(", ")}`;
+    wbMessageTimer = 140;
   } else {
-    currentScreen = "lose";
+    wbMessage = `Too much: ${excess.join(", ")}`;
+    wbMessageTimer = 140;
   }
 }

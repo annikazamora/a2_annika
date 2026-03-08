@@ -10,10 +10,6 @@
 // ------------------------------
 // drawPantry() is called from main.js
 // only when currentScreen === "pantry"
-let flourCounter = 0;
-let waterCounter = 0;
-let starterCounter = 0;
-let saltCounter = 0;
 
 function drawPantry() {
   // Light neutral background
@@ -91,13 +87,16 @@ function pantryMousePressed() {
   //checks if ingredients are clicked
   if (isHover(starterBtn)) {
     starterCounter++;
+    energy = energy - int(random(4, 10));
   }
   if (isHover(saltBtn)) {
     saltCounter++;
+    energy = energy - int(random(4, 10));
   }
 
   if (isHover(waterBtn)) {
     waterCounter++;
+    energy = energy - int(random(4, 10));
   }
 }
 

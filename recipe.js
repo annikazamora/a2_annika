@@ -14,15 +14,19 @@ function drawRecipe() {
   background(255, 210, 210);
 
   fill(0);
-  textAlign(CENTER, CENTER);
+  textAlign(LEFT, CENTER);
 
-  // Main message
+  // Bread type
   textSize(40);
-  text("recipe!", width / 2, 300);
+  text("Sourdough!", width / 3, 250);
 
-  // Instruction text
-  textSize(20);
-  text("Click or press R to return to Start.", width / 2, 360);
+  // Ingredients
+  textSize(30);
+  text("Ingredients:", width / 3, 325);
+  text("- Flour: " + flourCounter + "/3", width / 3, 375);
+  text("- Water: " + waterCounter + "/2", width / 3, 425);
+  text("- Starter: " + starterCounter + "/1", width / 3, 475);
+  text("- Salt: " + saltCounter + "/1", width / 3, 525);
 }
 
 // ------------------------------

@@ -24,6 +24,12 @@
 let currentScreen = "home"; // "home" | "pantry" | "workbench" | "oven" | "recipe"
 let bread = 0; // game state variable to track how many breads the player has (starts at 0)
 let energy = 90; // game state variable to track the player's energy (starts at 90)
+// Ingredient counters (start at 0, increase when player clicks on ingredient in pantry)
+let flourCounter = 0;
+let waterCounter = 0;
+let starterCounter = 0;
+let saltCounter = 0;
+let prevScreen = "home";
 
 // ------------------------------
 // setup() runs ONCE at the beginning
@@ -31,10 +37,11 @@ let energy = 90; // game state variable to track the player's energy (starts at 
 // This is where you usually set canvas size and initial settings.
 function setup() {
   createCanvas(1344, 756);
-
+  energy = int(random(70, 98)); // start with random energy between 70 and 98
   // Sets a default font for all text() calls
   // (This can be changed later per-screen if you want.)
   textFont("sans-serif");
+  initWorkbench();
 }
 
 // ------------------------------
@@ -57,6 +64,11 @@ function draw() {
   else if (currentScreen === "oven") drawOven();
   else if (currentScreen === "recipe") drawRecipe();
   else if (currentScreen === "end") drawEnd();
+
+  if (currentScreen === "workbench" && prevScreen !== "workbench") {
+    initWorkbench();
+  }
+  prevScreen = currentScreen;
 
   drawNavbar();
 }
@@ -105,6 +117,14 @@ function keyPressed() {
   else if (currentScreen === "end") endKeyPressed();
 
   navbarKeyPressed();
+}
+
+function mouseDragged() {
+  if (currentScreen === "workbench") workbenchMouseDragged();
+}
+
+function mouseReleased() {
+  if (currentScreen === "workbench") workbenchMouseReleased();
 }
 
 // ------------------------------------------------------------
