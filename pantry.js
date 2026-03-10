@@ -35,23 +35,23 @@ function getPantryIngredients() {
     },
     {
       name: "Water",
-      x: width * 0.5,
-      y: height / 3,
-      w: 120,
-      h: 180,
-      label: "Water",
+      img: allimg[13],
+      x: width / 2 - 12,
+      y: height / 2 + 100,
+      w: 165,
+      h: 185,
       counterName: "waterCounter",
-      useOpaqueHitbox: false,
+      useOpaqueHitbox: true,
     },
     {
       name: "Flour",
-      x: width / 2,
-      y: height / 3,
+      img: allimg[11],
+      x: width / 2 + 185,
+      y: height / 2 + 130,
       w: 100,
       h: 100,
-      label: "Flour",
       counterName: "flourCounter",
-      useOpaqueHitbox: false,
+      useOpaqueHitbox: true,
     },
   ];
 }
@@ -64,56 +64,56 @@ function drawPantry() {
   const ingredients = getPantryIngredients();
 
   for (let ingredient of ingredients) {
-    if (ingredient.img) {
-      const hovering = isMouseOverOpaqueImage(
-        ingredient.img,
-        ingredient.x,
-        ingredient.y,
-        ingredient.w,
-        ingredient.h,
-      );
+    const hovering = isMouseOverOpaqueImage(
+      ingredient.img,
+      ingredient.x,
+      ingredient.y,
+      ingredient.w,
+      ingredient.h,
+    );
 
-      tint(hovering ? 150 : 255);
-      image(
-        ingredient.img,
-        ingredient.x,
-        ingredient.y,
-        ingredient.w,
-        ingredient.h,
-      );
-      noTint();
-    } else {
-      drawPantryButton(ingredient);
-    }
+    tint(hovering ? 150 : 255);
+    image(
+      ingredient.img,
+      ingredient.x,
+      ingredient.y,
+      ingredient.w,
+      ingredient.h,
+    );
+    noTint();
 
     drawIngredientCounter(ingredient);
   }
 }
 
-function pantryMousePressed() {
-  const backBtn = { x: width / 2, y: 560, w: 220, h: 70 };
-
-  if (isHover(backBtn)) {
-    currentScreen = "home";
-    return;
+function isMouseOverOpaqueImage(img, x, y, w, h) {
+  if (mouseX < x || mouseX > x + w || mouseY < y || mouseY > y + h) {
+    return false;
   }
 
+  let imgX = floor(map(mouseX, x, x + w, 0, img.width));
+  let imgY = floor(map(mouseY, y, y + h, 0, img.height));
+
+  imgX = constrain(imgX, 0, img.width - 1);
+  imgY = constrain(imgY, 0, img.height - 1);
+
+  let c = img.get(imgX, imgY);
+  let alphaValue = c[3];
+
+  return alphaValue > 10;
+}
+
+function pantryMousePressed() {
   const ingredients = getPantryIngredients();
 
   for (let ingredient of ingredients) {
-    let clicked = false;
-
-    if (ingredient.useOpaqueHitbox && ingredient.img) {
-      clicked = isMouseOverOpaqueImage(
-        ingredient.img,
-        ingredient.x,
-        ingredient.y,
-        ingredient.w,
-        ingredient.h,
-      );
-    } else {
-      clicked = isHover(ingredient);
-    }
+    const clicked = isMouseOverOpaqueImage(
+      ingredient.img,
+      ingredient.x,
+      ingredient.y,
+      ingredient.w,
+      ingredient.h,
+    );
 
     if (clicked) {
       incrementIngredientCounter(ingredient.counterName);
@@ -145,19 +145,4 @@ function drawIngredientCounter(ingredient) {
     ingredient.x + ingredient.w / 2,
     ingredient.y + ingredient.h + 20,
   );
-}
-
-function drawPantryButton({ x, y, w, h, label }) {
-  rectMode(CORNER);
-
-  const hover = isHover({ x, y, w, h });
-
-  noStroke();
-  fill(hover ? color(200, 200, 255, 200) : color(220, 220, 255, 170));
-  rect(x, y, w, h, 12);
-
-  fill(0);
-  textSize(26);
-  textAlign(CENTER, CENTER);
-  text(label, x + w / 2, y + h / 2);
 }
