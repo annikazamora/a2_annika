@@ -29,7 +29,7 @@ let font; // global variable to store the loaded font (populated in preload())
 let prevScreen = "home";
 let video;
 let playing = false; // track if the intro video is currently playing
-let videoFinished = false; // track if the intro video has finished playing
+let videoFinished = true; // track if the intro video has finished playing
 
 // Ingredient counters (start at 0, increase when player clicks on ingredient in pantry)
 let flourCounter = 0;
