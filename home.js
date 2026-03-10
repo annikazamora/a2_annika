@@ -11,62 +11,74 @@
 // drawHome() is called from main.js only when:
 // currentScreen === "home"
 function drawHome() {
-  // Background colour for the home screen
-  background(180, 225, 220); // soft teal background
+  if (!videoFinished) {
+    // Play the intro video
+    if (!playing) {
+      video.play();
+      playing = true;
+    }
+    image(video, 0, 0, width, height);
+  } else {
+    imageMode(CORNER);
+    // Background colour for the home screen
+    image(allimg[0], 0, 0, width, height); // background image
 
-  // ---- Title text ----
-  fill(30, 50, 60);
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  text("Pantry", width / 5, 180);
+    // ---- Title text ----
+    fill(255);
+    stroke(84, 43, 20);
+    strokeWeight(5);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    text("Pantry", 315, 200);
+    text("Workbench", 710, 300);
+    text("Oven", 1075, 200);
 
-  fill(30, 50, 60);
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  text("Workbench", width / 2, 180);
+    // ---- Buttons (data only) ----
+    // These objects store the position/size/label for each button.
+    // Using objects makes it easy to pass them into drawButton()
+    // and also reuse the same information for hover checks.
+    const pantryBtn = {
+      x: 315,
+      y: 475,
+      w: 240,
+      h: 420,
+      label: "",
+    };
 
-  fill(30, 50, 60);
-  textSize(36);
-  textAlign(CENTER, CENTER);
-  text("Oven", width - width / 5, 180);
+    const workBtn = {
+      x: 710,
+      y: 600,
+      w: 340,
+      h: 240,
+      label: "",
+    };
 
-  // ---- Buttons (data only) ----
-  // These objects store the position/size/label for each button.
-  // Using objects makes it easy to pass them into drawButton()
-  // and also reuse the same information for hover checks.
-  const pantryBtn = {
-    x: width / 5,
-    y: 520,
-    w: 240,
-    h: 420,
-    label: "",
-  };
+    const ovenBtn = {
+      x: 1075,
+      y: 565,
+      w: 240,
+      h: 280,
+      label: "",
+    };
 
-  const workBtn = {
-    x: width / 2,
-    y: 570,
-    w: 340,
-    h: 320,
-    label: "",
-  };
+    // Draw all buttons
+    drawButton(pantryBtn);
+    drawButton(workBtn);
+    drawButton(ovenBtn);
 
-  const ovenBtn = {
-    x: width - width / 5,
-    y: 520,
-    w: 240,
-    h: 420,
-    label: "",
-  };
+    // show pantry image when hovered
+    imageMode(CENTER);
+    if (isHover(pantryBtn)) {
+      image(allimg[1], 325, 485, 420, 550);
+    } else if (isHover(ovenBtn)) {
+      image(allimg[2], 1070, 580, 325, 380);
+    }
 
-  // Draw all buttons
-  drawButton(pantryBtn);
-  drawButton(workBtn);
-  drawButton(ovenBtn);
-
-  // ---- Cursor feedback ----
-  // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
-  const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
-  cursor(over ? HAND : ARROW);
+    // ---- Cursor feedback ----
+    // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
+    const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
+    cursor(over ? HAND : ARROW);
+  }
 }
 
 // ------------------------------------------------------------
@@ -74,16 +86,19 @@ function drawHome() {
 // ------------------------------------------------------------
 // Called from main.js only when currentScreen === "home"
 function homeMousePressed() {
+  // Do nothing if video is still playing
+  if (!videoFinished) return;
+
   // For input checks, we only need x,y,w,h (label is optional)
-  const pantryBtn = { x: width / 5, y: 520, w: 240, h: 420 };
-  const workBtn = { x: width / 2, y: 570, w: 340, h: 320 };
-  const ovenBtn = { x: width - width / 5, y: 520, w: 240, h: 420 };
+  const pantryBtn = { x: 315, y: 475, w: 240, h: 420 };
+  const workBtn = { x: 710, y: 600, w: 340, h: 240 };
+  const ovenBtn = { x: 1075, y: 565, w: 240, h: 280 };
 
   // If workbench is clicked, go to the workbench screen
   if (isHover(workBtn)) {
     currentScreen = "workbench";
   }
-  // If INSTRUCTIONS is clicked, go to the instructions screen
+  // If pantry is clicked, go to the pantry screen
   else if (isHover(pantryBtn)) {
     currentScreen = "pantry";
   }
@@ -101,7 +116,7 @@ function homeMousePressed() {
 // That logic lives in homeMousePressed() above.
 //
 // Keeping drawing separate from input/logic makes code easier to read.
-function drawButton({ x, y, w, h, label }) {
+function drawButton({ x, y, w, h, label }, disabled = false) {
   rectMode(CENTER);
 
   // Check if the mouse is over the button rectangle
@@ -116,18 +131,21 @@ function drawButton({ x, y, w, h, label }) {
   //
   // We also add a shadow using drawingContext (p5 lets you access the
   // underlying canvas context for effects like shadows).
-  if (hover) {
-    fill(255, 200, 150, 220); // warm coral on hover
+  if (disabled) {
+    fill(200, 200, 200, label ? 255 : 0); // grey for disabled buttons
+    drawingContext.shadowBlur = 0; // no shadow for disabled
+  } else if (hover) {
+    fill(202, 227, 235, label ? 255 : 0); // warm coral on hover, visible for navbar buttons
 
     // Shadow settings (only when hovered)
     drawingContext.shadowBlur = 20;
-    drawingContext.shadowColor = color(255, 180, 120);
+    drawingContext.shadowColor = color(242, 248, 250);
   } else {
-    fill(255, 240, 210, 210); // soft cream base
+    fill(255, 240, 210, label ? 255 : 0); // soft cream base, visible for navbar buttons
 
     // Softer shadow when not hovered
     drawingContext.shadowBlur = 8;
-    drawingContext.shadowColor = color(220, 220, 220);
+    drawingContext.shadowColor = color(242, 248, 250);
   }
 
   // Draw the rounded rectangle button

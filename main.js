@@ -24,12 +24,32 @@
 let currentScreen = "home"; // "home" | "pantry" | "workbench" | "oven" | "recipe"
 let bread = 0; // game state variable to track how many breads the player has (starts at 0)
 let energy = 90; // game state variable to track the player's energy (starts at 90)
+let allimg = []; // global array to store all loaded images (populated in preload())
+let font; // global variable to store the loaded font (populated in preload())
+let prevScreen = "home";
+let video;
+let playing = false; // track if the intro video is currently playing
+let videoFinished = false; // track if the intro video has finished playing
+
 // Ingredient counters (start at 0, increase when player clicks on ingredient in pantry)
 let flourCounter = 0;
 let waterCounter = 0;
 let starterCounter = 0;
 let saltCounter = 0;
-let prevScreen = "home";
+
+// Load all images
+function preload() {
+  for (let i = 0; i < 33; i++) {
+    let name = loadImage(`libraries/assets/images/${i}.png`);
+    allimg.push(name);
+  }
+
+  // Load the intro video
+  video = createVideo("libraries/assets/intro.mp4");
+
+  // Load a custom font before the sketch starts
+  font = loadFont("libraries/assets/font/playpen.ttf");
+}
 
 // ------------------------------
 // setup() runs ONCE at the beginning
@@ -40,8 +60,17 @@ function setup() {
   energy = int(random(70, 98)); // start with random energy between 70 and 98
   // Sets a default font for all text() calls
   // (This can be changed later per-screen if you want.)
-  textFont("sans-serif");
+  fill(84, 43, 20);
+  textFont(font);
   initWorkbench();
+
+  video.hide();
+  video.size(width, height);
+  video.elt.muted = true; // Allow autoplay by muting the video
+  video.onended(() => {
+    videoFinished = true;
+    currentScreen = "home"; // Ensure we switch to the home screen after the video ends
+  });
 }
 
 // ------------------------------
@@ -57,6 +86,7 @@ function draw() {
   //   oven.js          → drawOven()
   //   recipe.js        → drawRecipe()
   //   end.js           → drawEnd()
+  //   sleep.js         → drawSleep()
 
   if (currentScreen === "home") drawHome();
   else if (currentScreen === "pantry") drawPantry();
@@ -64,13 +94,21 @@ function draw() {
   else if (currentScreen === "oven") drawOven();
   else if (currentScreen === "recipe") drawRecipe();
   else if (currentScreen === "end") drawEnd();
+  else if (currentScreen === "sleep") drawSleep();
 
   if (currentScreen === "workbench" && prevScreen !== "workbench") {
     initWorkbench();
   }
   prevScreen = currentScreen;
 
-  drawNavbar();
+  // Only draw navbar if video has finished playing
+  if (videoFinished) {
+    drawNavbar();
+  }
+
+  if (energy <= 4) {
+    currentScreen = "sleep";
+  }
 }
 
 // ------------------------------
@@ -92,6 +130,7 @@ function mousePressed() {
   else if (currentScreen === "oven") ovenMousePressed();
   else if (currentScreen === "recipe") recipeMousePressed();
   else if (currentScreen === "end") endMousePressed();
+  else if (currentScreen === "sleep") sleepMousePressed();
 
   navbarMousePressed();
 }
@@ -115,6 +154,7 @@ function keyPressed() {
   else if (currentScreen === "oven") ovenKeyPressed();
   else if (currentScreen === "recipe") recipeKeyPressed();
   else if (currentScreen === "end") endKeyPressed();
+  else if (currentScreen === "sleep") sleepKeyPressed();
 
   navbarKeyPressed();
 }

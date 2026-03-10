@@ -1,6 +1,7 @@
 function drawEnd() {
   // Background colour for the home screen
   background(180, 225, 220); // soft teal background
+  image(allimg[4], width / 2, height / 2, width, height); // recipe background image
 
   // ---- Title text ----
   fill(30, 50, 60);
@@ -39,9 +40,7 @@ function endMousePressed() {
   // If home button is clicked, go to the home screen
   if (isHover(homeBtn)) {
     currentScreen = "home";
-  }
-  // If sleep button is clicked, go to the sleep screen
-  else if (isHover(sleepBtn)) {
-    currentScreen = "";
+  } else if (isHover(sleepBtn)) {
+    currentScreen = "sleep";
   }
 }

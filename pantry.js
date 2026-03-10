@@ -87,16 +87,16 @@ function pantryMousePressed() {
   //checks if ingredients are clicked
   if (isHover(starterBtn)) {
     starterCounter++;
-    energy = energy - int(random(4, 10));
+    energy = energy - int(random(4, 8));
   }
   if (isHover(saltBtn)) {
     saltCounter++;
-    energy = energy - int(random(4, 10));
+    energy = energy - int(random(4, 8));
   }
 
   if (isHover(waterBtn)) {
     waterCounter++;
-    energy = energy - int(random(4, 10));
+    energy = energy - int(random(4, 8));
   }
 }
 

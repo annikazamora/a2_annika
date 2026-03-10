@@ -11,22 +11,37 @@
 // only when currentScreen === "recipe"
 function drawRecipe() {
   // Red-tinted background to communicate failure
-  background(255, 210, 210);
+  background(235, 223, 226);
+  image(allimg[4], width / 2, height / 2, width, height); // recipe background image
+  image(allimg[3], width / 2, 440, 1200, 650); // recipe image
 
   fill(0);
   textAlign(LEFT, CENTER);
+  textSize(25);
 
-  // Bread type
-  textSize(40);
-  text("Sourdough!", width / 3, 250);
+  // Game instructions
+  text("Today we are making my", 240, 300);
+  text("favourite sourdough bread!", 240, 335);
+  text("We have 3 orders,", 240, 400);
+  text("but we might not be able", 240, 435);
+  text("to make them all today.", 240, 470);
+  text("Balancing our energy is", 240, 535);
+  text("just as important as", 240, 570);
+  text("filling orders!", 240, 605);
 
   // Ingredients
-  textSize(30);
-  text("Ingredients:", width / 3, 325);
-  text("- Flour: " + flourCounter + "/3", width / 3, 375);
-  text("- Water: " + waterCounter + "/2", width / 3, 425);
-  text("- Starter: " + starterCounter + "/1", width / 3, 475);
-  text("- Salt: " + saltCounter + "/1", width / 3, 525);
+  text("Collect the following", 760, 200);
+  text("items from the pantry.", 760, 235);
+  text("Ingredients:", 760, 290);
+  text("- Flour: " + flourCounter + "/3", 760, 340);
+  text("- Water: " + waterCounter + "/2", 760, 390);
+  text("- Starter: " + starterCounter + "/1", 760, 440);
+  text("- Salt: " + saltCounter + "/1", 760, 490);
+
+  // Instructions
+  text("Combine all the ingredients", 760, 555);
+  text("on the workbench, then", 760, 590);
+  text("bake the dough in the oven.", 760, 625);
 }
 
 // ------------------------------
