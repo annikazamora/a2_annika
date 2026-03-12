@@ -81,9 +81,9 @@ function drawPantry() {
       ingredient.h,
     );
     noTint();
-
-    drawIngredientCounter(ingredient);
   }
+
+  drawIngredientLegend();
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
@@ -145,4 +145,25 @@ function drawIngredientCounter(ingredient) {
     ingredient.x + ingredient.w / 2,
     ingredient.y + ingredient.h + 20,
   );
+}
+
+function drawIngredientLegend() {
+  fill(255, 240);
+
+  const x = width - 85;
+  const y = height / 2;
+  const w = 170;
+  const h = 180;
+
+  rect(x, y, w, h);
+
+  fill(0);
+  textSize(16);
+  textAlign(LEFT, TOP);
+
+  text("Ingredients", x - w / 4, y - h / 3 - 15);
+  text("Starter: " + starterCounter, x - w / 4, y - h / 3 + 5);
+  text("Salt: " + saltCounter, x - w / 4, y - h / 3 + 25);
+  text("Water: " + waterCounter, x - w / 4, y - h / 3 + 45);
+  text("Flour: " + flourCounter, x - w / 4, y - h / 3 + 65);
 }

@@ -10,7 +10,6 @@
 // ------------------------------------------------------------
 // drawHome() is called from main.js only when:
 // currentScreen === "home"
-
 function drawHome() {
   if (!videoFinished) {
     // Play the intro video

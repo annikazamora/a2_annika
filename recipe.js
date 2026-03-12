@@ -12,6 +12,7 @@
 function drawRecipe() {
   // Red-tinted background to communicate failure
   background(235, 223, 226);
+  imageMode(CENTER);
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
   image(allimg[3], width / 2, 440, 1200, 650); // recipe image
 
