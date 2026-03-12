@@ -106,6 +106,8 @@ function drawOven() {
     let breadY = ovenY - 20;
     image(breadImg, breadX, breadY, 220, 140);
   }
+
+  currentScreen = "oven";
 }
 
 // Mouse input
@@ -131,8 +133,6 @@ function ovenMousePressed() {
       // optional: show warning message here
       text(warningMessage, width / 2, height / 2);
     }
-  } else {
-    currentScreen = "start";
   }
 }
 

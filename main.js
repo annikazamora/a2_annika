@@ -26,7 +26,8 @@ let bread = 0; // game state variable to track how many breads the player has (s
 let energy = 90; // game state variable to track the player's energy (starts at 90)
 let allimg = []; // global array to store all loaded images (populated in preload())
 let font; // global variable to store the loaded font (populated in preload())
-let prevScreen = "home";
+let prevScreen = "recipe";
+let recipeClicked = false; // track if the player has clicked the recipe button at least once (starts at false, becomes true when they do)
 let video;
 let playing = false; // track if the intro video is currently playing
 let videoFinished = true; // track if the intro video has finished playing
@@ -40,7 +41,7 @@ let saltCounter = 0;
 
 // Load all images
 function preload() {
-  for (let i = 0; i < 34; i++) {
+  for (let i = 0; i < 35; i++) {
     let name = loadImage(`libraries/assets/images/${i}.png`);
     allimg.push(name);
   }

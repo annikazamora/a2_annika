@@ -4,7 +4,7 @@ Bread and Balance - A2_Group3A_MidtermGame
 
 ## Authors
 
-- - Paige Gugeler
+- Paige Gugeler
 - Annika Zamora
 - Brianna Zampini
 - Paige Van Overberghe

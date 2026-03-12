@@ -60,7 +60,7 @@ function drawPantry() {
   background(240);
   imageMode(CORNER);
   image(allimg[31], 0, 0, width, height);
-  image(allimg[1], width / 2 - 250, 0, 550, 800);
+  image(allimg[34], width / 2 - 250, 0, 550, 800);
 
   const ingredients = getPantryIngredients();
 
@@ -83,6 +83,8 @@ function drawPantry() {
     );
     noTint();
   }
+
+  currentScreen = "pantry";
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
