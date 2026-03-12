@@ -16,6 +16,8 @@ function drawRecipe() {
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
   image(allimg[3], width / 2, 440, 1200, 650); // recipe image
 
+  print("hi");
+
   fill(0);
   textAlign(LEFT, CENTER);
   textSize(25);
