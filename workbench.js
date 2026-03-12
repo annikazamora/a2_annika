@@ -1,13 +1,20 @@
 // ------------------------------
 // WORKBENCH SCREEN
 // ------------------------------
+//
+// Image assets used (loaded in main.js preload via allimg[]):
+//   allimg[31] → background (31.png)
+//   allimg[14] → workbench table (14.png)
+//   allimg[8]  → empty bowl (8.png)
+//   allimg[9]  → bowl with dough (9.png)
 
-const BREAD_RECIPE = { water: 2, starter: 1, salt: 1 };
+const BREAD_RECIPE = { flour: 3, water: 2, starter: 1, salt: 1 };
 
 const INGREDIENT_STYLES = {
-  water: { bg: [180, 220, 255], label: "WATER", emoji: "💧" },
-  starter: { bg: [245, 225, 185], label: "STARTER", emoji: "🫙" },
-  salt: { bg: [240, 240, 240], label: "SALT", emoji: "🧂" },
+  flour: { bg: [245, 225, 185], label: "FLOUR", emoji: "🌾", imgIndex: 11 },
+  water: { bg: [180, 220, 255], label: "WATER", emoji: "💧", imgIndex: 13 },
+  starter: { bg: [245, 225, 185], label: "STARTER", emoji: "🫙", imgIndex: 6 },
+  salt: { bg: [240, 240, 240], label: "SALT", emoji: "🧂", imgIndex: 5 },
 };
 
 let wbIngredients = [];
@@ -16,38 +23,95 @@ let wbContents = {};
 let wbDragging = null;
 let wbMessage = "";
 let wbMessageTimer = 0;
+let wbShowRecipe = false;
 
 function initWorkbench() {
   wbContents = {};
   wbDragging = null;
   wbMessage = "";
   wbMessageTimer = 0;
+  wbShowRecipe = false;
 
-  wbBowl = { x: width / 2, y: height / 2 + 20, w: 200, h: 130 };
+  wbBowl = { x: width / 2, y: height * 0.43, w: 200, h: 130 };
 
   wbIngredients = [];
   const names = Object.keys(INGREDIENT_STYLES);
   names.forEach((name, i) => {
+    const pantryCount = {
+      flour: flourCounter,
+      water: waterCounter,
+      starter: starterCounter,
+      salt: saltCounter,
+    };
     wbIngredients.push({
       name,
-      x: 75 + i * 110,
-      y: 250,
-      w: 90,
-      h: 75,
-      count: 3,
+      x: 100 + i * 130,
+      y: height * 0.8,
+      w: 100,
+      h: 100,
+      count: pantryCount[name] || 0,
     });
   });
 }
 
-function drawWorkbench() {
-  background(240, 225, 200);
+function wbRecipeComplete() {
+  return Object.entries(BREAD_RECIPE).every(
+    ([name, needed]) => (wbContents[name] || 0) >= needed,
+  );
+}
 
-  drawWbIngredients();
-  drawWbBowl();
+function drawWorkbench() {
+  // 1. Background
+  imageMode(CORNER);
+  if (allimg[31]) {
+    image(allimg[31], 0, 0, width, height);
+  } else {
+    background(220, 210, 205);
+  }
+
+  // 2. Workbench table
+  imageMode(CENTER);
+  const wbImgW = width * 0.72;
+  const wbImgH = wbImgW * (9 / 16);
+  const wbImgY = height * 0.62;
+  if (allimg[14]) {
+    image(allimg[14], width / 2, wbImgY, wbImgW, wbImgH);
+  }
+
+  // 3. Bowl
+  const counterY = wbImgY - wbImgH * 0.41;
+  wbBowl.x = width / 2 - 15;
+  wbBowl.y = counterY;
+  wbBowl.w = 400;
+  wbBowl.h = 260;
+
+  imageMode(CENTER);
+  const bowlImg = wbRecipeComplete() ? allimg[9] : allimg[8];
+  if (bowlImg) {
+    image(bowlImg, wbBowl.x, wbBowl.y, wbBowl.w, wbBowl.h);
+  } else {
+    _drawWbBowlFallback();
+  }
+
+  // 4. Bowl contents
   drawWbBowlContents();
-  drawWbRecipe();
+
+  // 5. Recipe card (only if open)
+  if (wbShowRecipe) drawWbRecipe();
+
+  // 6. Ingredient tokens
+  drawWbIngredients();
+
+  // 7. Bake button
   drawWbBakeButton();
+
+  // 8. Recipe toggle button
+  drawWbRecipeBtn();
+
+  // 9. Dragged token
   drawWbDragging();
+
+  // 10. Toast message
   drawWbMessage();
 
   cursor(wbIsOverIngredient() ? HAND : ARROW);
@@ -63,63 +127,58 @@ function drawWbIngredients() {
 function drawWbToken(x, y, w, h, name, count) {
   const style = INGREDIENT_STYLES[name];
   const empty = count <= 0;
+  const img = allimg[style.imgIndex];
+
+  // Bowl-coloured background box
   rectMode(CENTER);
-
-  // Shadow
-  fill(0, 0, 0, 25);
-  noStroke();
-  rect(x + 3, y + 4, w, h, 10);
-
-  // Body
-  fill(empty ? color(200, 200, 200) : color(...style.bg));
-  stroke(empty ? color(170, 170, 170) : color(0, 0, 0, 40));
+  fill(empty ? color(210, 200, 200) : color(232, 185, 185));
+  stroke(190, 140, 140);
   strokeWeight(1.5);
-  rect(x, y, w, h, 10);
-
-  // Text
+  rect(x, y, w + 10, h + 40, 12);
   noStroke();
-  fill(empty ? 160 : 60);
-  textAlign(CENTER, CENTER);
-  textSize(22);
-  text(style.emoji, x, y + 5);
-  textSize(10);
-  text(style.label, x, y - 20);
 
-  if (!empty) {
-    textSize(10);
-    fill(80, 40, 10);
-    text(`×${count}`, x + w / 2 - 12, y - h / 2 + 10);
+  imageMode(CENTER);
+
+  if (empty) {
+    tint(150, 150, 150);
+  } else {
+    noTint();
   }
 
-  rectMode(CORNER);
-}
+  if (img) {
+    image(img, x, y - 10, w, h);
+  } else {
+    rectMode(CENTER);
+    fill(empty ? color(200, 200, 200) : color(...style.bg));
+    stroke(empty ? color(170, 170, 170) : color(0, 0, 0, 40));
+    strokeWeight(1.5);
+    rect(x, y, w, h, 10);
+    noStroke();
+    fill(empty ? 160 : 60);
+    textAlign(CENTER, CENTER);
+    textSize(22);
+    text(style.emoji, x, y + 5);
+    rectMode(CORNER);
+  }
 
-function drawWbBowl() {
-  const { x, y, w, h } = wbBowl;
+  noTint();
 
-  // Shadow
-  fill(0, 0, 0, 35);
-  noStroke();
-  ellipse(x, y + h * 0.5, w + 20, 18);
+  if (!empty) {
+    fill(80, 40, 10);
+    noStroke();
+    textSize(13);
+    textAlign(CENTER, CENTER);
+    text(`×${count}`, x + w / 2 - 8, y - h / 2 + 10);
+  }
 
-  // Bowl
-  fill(232, 215, 195);
-  stroke(150, 110, 70);
-  strokeWeight(3);
-  arc(x, y, w, h, 0, PI, CHORD);
-  ellipse(x, y, w, h * 0.28);
-
-  // Inner
-  fill(215, 198, 178, 150);
-  noStroke();
-  ellipse(x, y, w - 20, h * 0.2);
-
-  // Label
-  fill(120, 75, 30);
+  fill(60, 30, 10);
   noStroke();
   textSize(11);
   textAlign(CENTER, CENTER);
-  text("drop ingredients here", x, y + h * 0.58);
+  text(style.label, x, y + h / 2 + 10);
+
+  rectMode(CORNER);
+  imageMode(CORNER);
 }
 
 function drawWbBowlContents() {
@@ -127,25 +186,53 @@ function drawWbBowlContents() {
   const items = Object.entries(wbContents).filter(([, c]) => c > 0);
   if (items.length === 0) return;
 
-  let ix = x - (items.length * 26) / 2 + 13;
+  const iconSize = 40;
+  const spacing = iconSize + 10;
+  let ix = x - (items.length * spacing) / 2 + spacing / 2;
+
+  imageMode(CENTER);
   for (const [name, count] of items) {
-    noStroke();
-    textSize(14);
-    textAlign(CENTER, CENTER);
-    text(INGREDIENT_STYLES[name].emoji, ix, y - 8);
+    const style = INGREDIENT_STYLES[name];
+    const img = allimg[style.imgIndex];
+    if (img) {
+      image(img, ix, y - 10, iconSize, iconSize);
+    }
     fill(60, 30, 10);
-    textSize(9);
-    text(`×${count}`, ix, y + 7);
-    ix += 26;
+    noStroke();
+    textSize(10);
+    textAlign(CENTER, CENTER);
+    text(`×${count}`, ix, y + 22);
+    ix += spacing;
   }
+  imageMode(CORNER);
+}
+
+function _drawWbBowlFallback() {
+  const { x, y, w, h } = wbBowl;
+  fill(0, 0, 0, 35);
+  noStroke();
+  ellipse(x, y + h * 0.5, w + 20, 18);
+  fill(232, 215, 195);
+  stroke(150, 110, 70);
+  strokeWeight(3);
+  arc(x, y, w, h, 0, PI, CHORD);
+  ellipse(x, y, w, h * 0.28);
+  fill(215, 198, 178, 150);
+  noStroke();
+  ellipse(x, y, w - 20, h * 0.2);
+  fill(120, 75, 30);
+  noStroke();
+  textSize(11);
+  textAlign(CENTER, CENTER);
+  text("drop ingredients here", x, y + h * 0.58);
 }
 
 function drawWbRecipe() {
   const x = width - 200,
     y = 110,
     w = 165,
-    h = 175;
-
+    h = 215;
+  rectMode(CORNER);
   fill(255, 248, 215);
   stroke(190, 150, 90);
   strokeWeight(2);
@@ -184,16 +271,45 @@ function drawWbRecipe() {
 function drawWbBakeButton() {
   const btn = wbGetBtn();
   const hover = isHover(btn);
-  rectMode(CORNER);
+
+  rectMode(CENTER);
   fill(hover ? color(90, 175, 65) : color(70, 150, 50));
   stroke(40, 100, 30);
   strokeWeight(2);
   rect(btn.x, btn.y, btn.w, btn.h, 10);
+
+  imageMode(CENTER);
+  if (allimg[18]) {
+    image(allimg[18], btn.x - btn.w / 2 + 30, btn.y, 45, 35);
+  }
+
   fill(255);
   noStroke();
-  textSize(15);
+  textSize(14);
   textAlign(CENTER, CENTER);
-  text("✓ BAKE BREAD!", btn.x + btn.w / 2, btn.y + btn.h / 2);
+  text("BAKE BREAD!", btn.x + 15, btn.y);
+
+  rectMode(CORNER);
+  imageMode(CORNER);
+}
+
+function drawWbRecipeBtn() {
+  const btn = wbGetRecipeBtn();
+  const hover = isHover(btn);
+  rectMode(CORNER);
+  fill(hover ? color(200, 170, 90) : color(175, 145, 70));
+  stroke(130, 100, 40);
+  strokeWeight(2);
+  rect(btn.x, btn.y, btn.w, btn.h, 10);
+  fill(255);
+  noStroke();
+  textSize(13);
+  textAlign(CENTER, CENTER);
+  text(
+    wbShowRecipe ? "✕ CLOSE RECIPE" : "📋 VIEW RECIPE",
+    btn.x + btn.w / 2,
+    btn.y + btn.h / 2,
+  );
   rectMode(CORNER);
 }
 
@@ -217,11 +333,15 @@ function drawWbMessage() {
   noStroke();
   textSize(15);
   textAlign(CENTER, CENTER);
-  text(wbMessage, width / 2, height - 60);
+  text(wbMessage, width / 2, height - 30);
 }
 
 function wbGetBtn() {
-  return { x: width / 2 - 85, y: height - 55, w: 170, h: 42 };
+  return { x: width / 2, y: height - 62, w: 220, h: 50 };
+}
+
+function wbGetRecipeBtn() {
+  return { x: width - 175, y: height - 55, w: 160, h: 42 };
 }
 
 function wbIsOverIngredient() {
@@ -265,6 +385,7 @@ function workbenchMousePressed() {
     }
   }
   if (isHover(wbGetBtn())) wbCheckRecipe();
+  if (isHover(wbGetRecipeBtn())) wbShowRecipe = !wbShowRecipe;
 }
 
 function workbenchMouseDragged() {
@@ -300,6 +421,7 @@ function wbCheckRecipe() {
   }
   if (missing.length === 0 && excess.length === 0) {
     currentScreen = "oven";
+    ingredientsDone = true; // set global variable to true so oven screen can check
   } else if (missing.length > 0) {
     wbMessage = `Missing: ${missing.join(", ")}`;
     wbMessageTimer = 140;

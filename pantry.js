@@ -16,8 +16,8 @@ function getPantryIngredients() {
     {
       name: "Starter",
       img: allimg[6],
-      x: width / 2 - 160,
-      y: height / 2 - 60,
+      x: width / 2 - 130,
+      y: height / 2 - 50,
       w: 140,
       h: 140,
       counterName: "starterCounter",
@@ -37,7 +37,7 @@ function getPantryIngredients() {
       name: "Water",
       img: allimg[13],
       x: width / 2 - 12,
-      y: height / 2 + 100,
+      y: height / 2 - 85,
       w: 165,
       h: 185,
       counterName: "waterCounter",
@@ -46,8 +46,8 @@ function getPantryIngredients() {
     {
       name: "Flour",
       img: allimg[11],
-      x: width / 2 - 25,
-      y: height / 2 - 90,
+      x: width / 2 - 15,
+      y: height / 2 + 125,
       w: 165,
       h: 170,
       counterName: "flourCounter",
@@ -59,7 +59,8 @@ function getPantryIngredients() {
 function drawPantry() {
   background(240);
   imageMode(CORNER);
-  image(allimg[28], 0, 0, width, height);
+  image(allimg[31], 0, 0, width, height);
+  image(allimg[1], width / 2 - 250, 0, 550, 800);
 
   const ingredients = getPantryIngredients();
 
@@ -82,8 +83,6 @@ function drawPantry() {
     );
     noTint();
   }
-
-  drawIngredientLegend();
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
@@ -145,25 +144,4 @@ function drawIngredientCounter(ingredient) {
     ingredient.x + ingredient.w / 2,
     ingredient.y + ingredient.h + 20,
   );
-}
-
-function drawIngredientLegend() {
-  fill(255, 240);
-
-  const x = width - 85;
-  const y = height / 2;
-  const w = 170;
-  const h = 180;
-
-  rect(x, y, w, h);
-
-  fill(0);
-  textSize(16);
-  textAlign(LEFT, TOP);
-
-  text("Ingredients", x - w / 4, y - h / 3 - 15);
-  text("Starter: " + starterCounter, x - w / 4, y - h / 3 + 5);
-  text("Salt: " + saltCounter, x - w / 4, y - h / 3 + 25);
-  text("Water: " + waterCounter, x - w / 4, y - h / 3 + 45);
-  text("Flour: " + flourCounter, x - w / 4, y - h / 3 + 65);
 }
