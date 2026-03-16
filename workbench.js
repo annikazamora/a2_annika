@@ -62,6 +62,7 @@ function wbRecipeComplete() {
 
 function drawWorkbench() {
   currentScreen = "workbench"; // Ensure currentScreen is set to "workbench" when drawing this screen
+  screen = "workbench";
 
   // 1. Background
   imageMode(CORNER);

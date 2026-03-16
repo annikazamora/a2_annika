@@ -107,7 +107,7 @@ function drawOven() {
     image(breadImg, breadX, breadY, 220, 140);
   }
 
-  currentScreen = "oven";
+  screen = "oven";
 }
 
 // Mouse input

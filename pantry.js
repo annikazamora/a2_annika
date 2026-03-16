@@ -84,7 +84,7 @@ function drawPantry() {
     noTint();
   }
 
-  currentScreen = "pantry";
+  screen = "pantry";
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
