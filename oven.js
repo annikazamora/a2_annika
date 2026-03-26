@@ -135,7 +135,3 @@ function ovenMousePressed() {
     }
   }
 }
-
-function ovenKeyPressed() {
-  if (key === "r" || key === "R") currentScreen = "home";
-}
