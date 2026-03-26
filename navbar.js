@@ -72,25 +72,24 @@ function drawNavbar() {
 // ------------------------------------------------------------
 // Called from main.js on every mouse click, regardless of the current screen
 function navbarMousePressed() {
-  if (currentScreen === "sleep") return; // buttons are disabled on sleep screen
+  if (currentScreen === "sleep") return;
 
   const recipeBtn = { x: width - 210, y: 90, w: 370, h: 50 };
   const endBtn = { x: 260, y: 90, w: 170, h: 50 };
   const homeBtn = { x: 100, y: 90, w: 150, h: 50 };
 
-  // Send the player to the recipe or end screens
-  if (isHover(recipeBtn) && recipeClicked === false) {
-    prevScreen = currentScreen; // Store the current screen before going to recipe
-    currentScreen = "recipe";
-    recipeClicked = true; // Mark that the player has clicked the recipe button at least once
-  } else if (isHover(recipeBtn) && recipeClicked === true) {
-    currentScreen = "home"; // Return to the previous screen if the recipe button is clicked again
-    recipeClicked = false; // Reset recipeClicked so that the next click will go to the recipe screen again
+  if (isHover(recipeBtn)) {
+    if (currentScreen !== "recipe") {
+      prevScreen = currentScreen; // remember where we came from
+      currentScreen = "recipe"; // open recipe
+    } else {
+      currentScreen = prevScreen; // go back to previous screen
+    }
   } else if (isHover(endBtn)) {
-    prevScreen = currentScreen; // Store the current screen before going to end
+    prevScreen = currentScreen;
     currentScreen = "end";
   } else if (currentScreen !== "home" && isHover(homeBtn)) {
-    prevScreen = currentScreen; // Store the current screen before going to home
+    prevScreen = currentScreen;
     currentScreen = "home";
   }
 }

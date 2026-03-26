@@ -26,8 +26,7 @@ let bread = 0; // game state variable to track how many breads the player has (s
 let energy = 90; // game state variable to track the player's energy (starts at 90)
 let allimg = []; // global array to store all loaded images (populated in preload())
 let font; // global variable to store the loaded font (populated in preload())
-let prevScreen = "recipe";
-let recipeClicked = false; // track if the player has clicked the recipe button at least once (starts at false, becomes true when they do)
+let prevScreen = "home";
 let video;
 let playing = false; // track if the intro video is currently playing
 let videoFinished = true; // track if the intro video has finished playing
@@ -101,7 +100,6 @@ function draw() {
   if (currentScreen === "workbench" && prevScreen !== "workbench") {
     initWorkbench();
   }
-  prevScreen = currentScreen;
 
   // Only draw navbar if video has finished playing
   if (videoFinished) {
