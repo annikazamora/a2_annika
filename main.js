@@ -97,10 +97,6 @@ function draw() {
   else if (currentScreen === "end") drawEnd();
   else if (currentScreen === "sleep") drawSleep();
 
-  if (currentScreen === "workbench" && prevScreen !== "workbench") {
-    initWorkbench();
-  }
-
   // Only draw navbar if video has finished playing
   if (videoFinished) {
     drawNavbar();

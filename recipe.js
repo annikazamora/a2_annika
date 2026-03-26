@@ -7,6 +7,12 @@
 // ------------------------------
 // Main draw function for recipe screen
 // ------------------------------
+
+function recipeMousePressed() {
+  //intentionally empty
+  //do not close recipe screen when clicking elsewhere
+}
+
 // drawRecipe() is called from main.js
 // only when currentScreen === "recipe"
 function drawRecipe() {
@@ -50,13 +56,3 @@ function drawRecipe() {
 // ------------------------------
 // Any mouse click returns the player to the start screen
 // (no buttons needed for this simple end state)
-
-// ------------------------------
-// Keyboard input for recipe screen
-// ------------------------------
-// R is commonly used for “restart” in games
-function recipeKeyPressed() {
-  if (key === "r" || key === "R") {
-    currentScreen = prevScreen;
-  }
-}
