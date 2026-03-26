@@ -9,6 +9,7 @@
 // Home screen visuals
 // ------------------------------------------------------------
 // drawHome() is called from main.js only when:
+// currentScreen === "home"
 
 function drawHome() {
   if (!videoFinished) {
@@ -98,7 +99,7 @@ function homeMousePressed() {
 
   // If workbench is clicked, go to the workbench screen
   if (isHover(workBtn)) {
-    prevScreen = currentScreen; // Store the current screen before going to workbench
+    prevScreen = currentScreen;
     currentScreen = "workbench";
   }
   // If pantry is clicked, go to the pantry screen

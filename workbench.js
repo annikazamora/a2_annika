@@ -107,9 +107,6 @@ function drawWorkbench() {
   // 7. Bake button
   drawWbBakeButton();
 
-  // 8. Recipe toggle button
-  drawWbRecipeBtn();
-
   // 9. Dragged token
   drawWbDragging();
 
@@ -360,14 +357,8 @@ function wbIsOverIngredient() {
   return false;
 }
 
-function wbInsideBowl(px, py) {
-  const { x, y, w, h } = wbBowl;
-  const dx = (px - x) / (w / 2);
-  const dy = (py - y) / (h / 2 + 30);
-  return dx * dx + dy * dy < 1.2;
-}
-
 function workbenchMousePressed() {
+  // Click an ingredient token to add one to the bowl
   for (const ing of wbIngredients) {
     if (
       ing.count > 0 &&
@@ -376,13 +367,14 @@ function workbenchMousePressed() {
       mouseY > ing.y - ing.h / 2 &&
       mouseY < ing.y + ing.h / 2
     ) {
-      wbDragging = {
-        name: ing.name,
-        x: mouseX,
-        y: mouseY,
-        count: ing.count,
-        source: ing,
-      };
+      wbContents[ing.name] = (wbContents[ing.name] || 0) + 1;
+      ing.count--;
+
+      let energyLoss = floor(random(4, 8)); // random number 4–8
+      energy = max(0, energy - energyLoss);
+
+      wbMessage = `Added ${INGREDIENT_STYLES[ing.name].emoji} ${INGREDIENT_STYLES[ing.name].label}! (- energy)`;
+      wbMessageTimer = 80;
       return;
     }
   }
@@ -390,24 +382,9 @@ function workbenchMousePressed() {
   if (isHover(wbGetRecipeBtn())) wbShowRecipe = !wbShowRecipe;
 }
 
-function workbenchMouseDragged() {
-  if (wbDragging) {
-    wbDragging.x = mouseX;
-    wbDragging.y = mouseY;
-  }
-}
+function workbenchMouseDragged() {}
 
-function workbenchMouseReleased() {
-  if (!wbDragging) return;
-  if (wbInsideBowl(mouseX, mouseY)) {
-    const name = wbDragging.name;
-    wbContents[name] = (wbContents[name] || 0) + 1;
-    wbDragging.source.count--;
-    wbMessage = `Added ${INGREDIENT_STYLES[name].emoji} ${INGREDIENT_STYLES[name].label}!`;
-    wbMessageTimer = 80;
-  }
-  wbDragging = null;
-}
+function workbenchMouseReleased() {}
 
 function workbenchKeyPressed() {
   if (keyCode === ENTER) wbCheckRecipe();
@@ -422,8 +399,8 @@ function wbCheckRecipe() {
     else if (have > needed) excess.push(INGREDIENT_STYLES[name].label);
   }
   if (missing.length === 0 && excess.length === 0) {
+    ingredientsDone = true;
     currentScreen = "oven";
-    ingredientsDone = true; // set global variable to true so oven screen can check
   } else if (missing.length > 0) {
     wbMessage = `Missing: ${missing.join(", ")}`;
     wbMessageTimer = 140;

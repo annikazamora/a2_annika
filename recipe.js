@@ -7,12 +7,6 @@
 // ------------------------------
 // Main draw function for recipe screen
 // ------------------------------
-
-function recipeMousePressed() {
-  //intentionally empty
-  //do not close recipe screen when clicking elsewhere
-}
-
 // drawRecipe() is called from main.js
 // only when currentScreen === "recipe"
 function drawRecipe() {
@@ -49,4 +43,13 @@ function drawRecipe() {
   text("Combine all the ingredients", 760, 555);
   text("on the workbench, then", 760, 590);
   text("bake the dough in the oven.", 760, 625);
+}
+
+// ------------------------------
+// Mouse input for recipe screen
+// ------------------------------
+// Any mouse click returns the player to the start screen
+// (no buttons needed for this simple end state)
+function recipeMousePressed() {
+  // intentionally empty
 }
