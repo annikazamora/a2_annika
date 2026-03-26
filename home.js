@@ -9,7 +9,7 @@
 // Home screen visuals
 // ------------------------------------------------------------
 // drawHome() is called from main.js only when:
-// currentScreen === "home"
+
 function drawHome() {
   if (!videoFinished) {
     // Play the intro video
@@ -80,8 +80,6 @@ function drawHome() {
     // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
     const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
     cursor(over ? HAND : ARROW);
-
-    currentScreen = "home";
   }
 }
 

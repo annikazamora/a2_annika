@@ -137,5 +137,5 @@ function ovenMousePressed() {
 }
 
 function ovenKeyPressed() {
-  if (key === "r" || key === "R") currentScreen = "start";
+  if (key === "r" || key === "R") currentScreen = "home";
 }

@@ -30,8 +30,6 @@ function drawEnd() {
   // Draw all buttons
   drawButton(homeBtn);
   drawButton(sleepBtn);
-
-  currentScreen = "end"; // Ensure currentScreen is set to "end" when drawing this screen
 }
 
 function endMousePressed() {
