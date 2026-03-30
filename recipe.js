@@ -1,8 +1,8 @@
 // ------------------------------
 // Recipe page-turn hitboxes
 // ------------------------------
-const recipeNextBtn = { x: 1140, y: 95, w: 120, h: 120 }; // top right
-const recipePrevBtn = { x: 205, y: 95, w: 120, h: 120 }; // top left
+const recipeNextBtn = { x: 1070, y: 220, w: 120, h: 120 }; // top right of book
+const recipePrevBtn = { x: 275, y: 220, w: 120, h: 120 }; // top left of book
 
 // ------------------------------
 // Main draw function for recipe screen

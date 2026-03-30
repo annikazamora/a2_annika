@@ -64,6 +64,7 @@ let sugarCounter = 0;
 let tomatoCounter = 0;
 let recipePage = 0;
 const LAST_RECIPE_PAGE = 2;
+recipeClicked = false;
 
 // Sound effects
 let ambiance;

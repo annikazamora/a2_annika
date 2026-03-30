@@ -17,6 +17,14 @@ function drawNavbar() {
   textAlign(RIGHT, CENTER);
   text("BREAD: " + bread, width - 30, 35);
 
+  text("EARNED: $" + money, width - 30, height - 80);
+  text("$400", width - 15, 220);
+
+  stroke(255, 0, 0);
+  fill(255, 0, 0);
+  text("DAYS UNTIL CULINARY SCHOOL: " + (11 - day), width - 30, height - 40);
+  stroke(0);
+
   // Energy bar
   rectMode(CORNER);
   noFill();
@@ -30,6 +38,12 @@ function drawNavbar() {
     fill(27, 158, 22); // Green color for high energy
   }
   rect(155, 30, energy * 3, 20, 20);
+
+  // Money earned
+  noFill();
+  rect(width - 50, 250, 20, 400, 20);
+  fill(27, 158, 22); // green money bar
+  rect(width - 50, 250 + 400 - money * 4, 20, money * 4, 20);
 
   // ------------------------------------------------------------
   // Button visuals
@@ -78,16 +92,29 @@ function navbarMousePressed() {
   const endBtn = { x: 260, y: 90, w: 170, h: 50 };
   const homeBtn = { x: 100, y: 90, w: 150, h: 50 };
 
-  if (isHover(recipeBtn) && recipeClicked === false) {
-    prevScreen = currentScreen;
-    currentScreen = "recipe";
-    recipePage = 0; // always open on first page
-    recipeClicked = true;
+  if (isHover(recipeBtn)) {
+    if (currentScreen !== "recipe") {
+      prevScreen = currentScreen;
+      currentScreen = "recipe";
+      recipePage = 0;
+      recipeClicked = true;
+    } else {
+      currentScreen = prevScreen;
+      recipeClicked = false;
+    }
   } else if (isHover(endBtn)) {
-    prevScreen = currentScreen;
+    if (currentScreen === "recipe") {
+      recipeClicked = false;
+    } else {
+      prevScreen = currentScreen;
+    }
     currentScreen = "end";
   } else if (currentScreen !== "home" && isHover(homeBtn)) {
-    prevScreen = currentScreen;
+    if (currentScreen === "recipe") {
+      recipeClicked = false;
+    } else {
+      prevScreen = currentScreen;
+    }
     currentScreen = "home";
   }
 }
