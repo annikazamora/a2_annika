@@ -21,66 +21,100 @@ function drawHome() {
     image(video, 0, 0, width, height);
   } else {
     imageMode(CORNER);
-    // Background colour for the home screen
-    image(allimg[0], 0, 0, width, height); // background image
 
-    // ---- Title text ----
-    fill(255);
-    stroke(84, 43, 20);
-    strokeWeight(5);
-    textSize(30);
-    textAlign(CENTER, CENTER);
-    text("Pantry", 315, 200);
-    text("Workbench", 710, 300);
-    text("Oven", 1075, 200);
+    if (daytimer > 0) {
+      textSize(40);
+      fill(84, 43, 20);
+      image(openday, 0, 0, width, height);
+      text("DAY " + day, 640, height / 6);
+      daytimer--;
+    } else {
+      game = true;
+      openday.stop();
 
-    // ---- Buttons (data only) ----
-    // These objects store the position/size/label for each button.
-    // Using objects makes it easy to pass them into drawButton()
-    // and also reuse the same information for hover checks.
-    const pantryBtn = {
-      x: 315,
-      y: 475,
-      w: 240,
-      h: 420,
-      label: "",
-    };
+      // Background colour for the home screen
+      image(allimg[0], 0, 0, width, height); // background image
 
-    const workBtn = {
-      x: 710,
-      y: 600,
-      w: 340,
-      h: 240,
-      label: "",
-    };
+      // ---- Title text ----
+      fill(255);
+      stroke(84, 43, 20);
+      strokeWeight(5);
+      textSize(30);
+      textAlign(CENTER, CENTER);
+      text("PANTRY", 345, 190);
+      text("WORKBENCH", 700, 300);
+      text("OVEN", 1025, 190);
 
-    const ovenBtn = {
-      x: 1075,
-      y: 565,
-      w: 240,
-      h: 280,
-      label: "",
-    };
+      // ---- Buttons (data only) ----
+      // These objects store the position/size/label for each button.
+      // Using objects makes it easy to pass them into drawButton()
+      // and also reuse the same information for hover checks.
+      const pantryBtn = {
+        x: 345,
+        y: 440,
+        w: 370,
+        h: 520,
+        label: "",
+      };
 
-    // Draw all buttons
-    drawButton(pantryBtn);
-    drawButton(workBtn);
-    drawButton(ovenBtn);
+      const workBtn = {
+        x: 711,
+        y: 544,
+        w: 437,
+        h: 290,
+        label: "",
+      };
 
-    // show pantry image when hovered
-    imageMode(CENTER);
-    if (isHover(pantryBtn)) {
-      image(allimg[1], 315, 490, 420, 580);
-    } else if (isHover(ovenBtn)) {
-      image(allimg[2], 1067, 580, 327, 383);
-    } else if (isHover(workBtn)) {
-      image(allimg[33], 717, 604, 490, 317);
+      const ovenBtn = {
+        x: 1025,
+        y: 522,
+        w: 297,
+        h: 345,
+        label: "",
+      };
+
+      // Draw all buttons
+      drawButton(pantryBtn);
+      drawButton(workBtn);
+      drawButton(ovenBtn);
+
+      // show pantry image when hovered
+      imageMode(CENTER);
+      if (isHover(pantryBtn)) {
+        image(allimg[1], 345, 440, 370, 520);
+      } else if (isHover(ovenBtn)) {
+        image(allimg[2], 1025, 522, 297, 345);
+      } else if (isHover(workBtn)) {
+        image(allimg[33], 711, 544, 437, 290);
+      }
+
+      // ---- Cursor feedback ----
+      // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
+      const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
+      cursor(over ? HAND : ARROW);
+
+      if (inst == false) {
+        tut = "Click on recipe instructions ";
+        tut2 = "to find out what to bake!";
+        prevScreen = currentScreen;
+        currentScreen = "popup";
+      }
+
+      if (
+        eng == false &&
+        inst == true &&
+        recp == true &&
+        pan == true &&
+        work == true &&
+        ovn == true
+      ) {
+        tut = "Watch your energy carefully,";
+        tut2 = "and go to sleep when it gets low!";
+        tut3 = "Good luck!";
+        prevScreen = currentScreen;
+        currentScreen = "popup";
+      }
     }
-
-    // ---- Cursor feedback ----
-    // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
-    const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
-    cursor(over ? HAND : ARROW);
   }
 }
 
@@ -93,9 +127,9 @@ function homeMousePressed() {
   if (!videoFinished) return;
 
   // For input checks, we only need x,y,w,h (label is optional)
-  const pantryBtn = { x: 315, y: 475, w: 240, h: 420 };
-  const workBtn = { x: 710, y: 600, w: 340, h: 240 };
-  const ovenBtn = { x: 1075, y: 565, w: 240, h: 280 };
+  const pantryBtn = { x: 345, y: 440, w: 370, h: 520 };
+  const workBtn = { x: 711, y: 544, w: 437, h: 290 };
+  const ovenBtn = { x: 1025, y: 522, w: 297, h: 345 };
 
   // If workbench is clicked, go to the workbench screen
   if (isHover(workBtn)) {

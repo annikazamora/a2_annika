@@ -117,6 +117,14 @@ function drawOven() {
   }
 
   screen = "oven"; // Ensure currentScreen is set to "oven" when drawing this screen
+
+  if (ovn == false) {
+    tut = "One the dough is  ";
+    tut2 = "ready, set the temperature ";
+    tut3 = "and click to bake!";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 // Mouse input

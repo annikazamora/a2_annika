@@ -43,13 +43,21 @@ function drawRecipe() {
   text("Combine all the ingredients", 760, 555);
   text("on the workbench, then", 760, 590);
   text("bake the dough in the oven.", 760, 625);
+
+  if (recp == false) {
+    tut = "Memorize the recipe ";
+    tut2 = "instructions then go home to the ";
+    tut3 = "pantry to collect ingredients!";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 // ------------------------------
 // Mouse input for recipe screen
 // ------------------------------
-// Any mouse click returns the player to the start screen
-// (no buttons needed for this simple end state)
 function recipeMousePressed() {
-  // intentionally empty
+  if (currentScreen === "popup") {
+    currentScreen = "home"; // Return to the previous screen after closing the popup
+  }
 }

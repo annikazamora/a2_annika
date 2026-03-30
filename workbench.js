@@ -114,6 +114,14 @@ function drawWorkbench() {
   drawWbMessage();
 
   cursor(wbIsOverIngredient() ? HAND : ARROW);
+
+  if (work == false) {
+    tut = "Click on the ingredients   ";
+    tut2 = "to combine them in the bowl.";
+    tut3 = "";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 function drawWbIngredients() {

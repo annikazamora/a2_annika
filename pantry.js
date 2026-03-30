@@ -85,6 +85,14 @@ function drawPantry() {
   }
 
   screen = "pantry";
+
+  if (pan == false) {
+    tut = "Click on the ingredients   ";
+    tut2 = "to collect them.";
+    tut3 = "";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
