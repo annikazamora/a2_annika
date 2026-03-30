@@ -62,6 +62,8 @@ let blueberryCounter = 0;
 let cinnamonCounter = 0;
 let sugarCounter = 0;
 let tomatoCounter = 0;
+let recipePage = 0;
+const LAST_RECIPE_PAGE = 2;
 
 // Sound effects
 let ambiance;
