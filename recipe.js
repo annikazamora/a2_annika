@@ -12,7 +12,7 @@ function drawRecipe() {
 
   imageMode(CENTER);
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
-  image(allimg[3], width / 2, 440, 1200, 650); // recipe book image
+  image(allimg[51], width / 2, 440, 1200, 650); // recipe book image
 
   fill(0);
   textAlign(LEFT, CENTER);
@@ -22,10 +22,13 @@ function drawRecipe() {
   // PAGE 1
   // ------------------------------
   if (recipePage === 0) {
+    textSize(40);
+    text("Plain Sourdough", 240, 220);
+    textSize(25);
     text("Today we are making my", 240, 300);
     text("favourite sourdough bread!", 240, 335);
 
-    text("We have 3 orders,", 240, 400);
+    text("We have multiple orders,", 240, 400);
     text("but we might not be able", 240, 435);
     text("to make them all today.", 240, 470);
 
@@ -43,48 +46,88 @@ function drawRecipe() {
 
     text("Combine all the ingredients", 760, 555);
     text("on the workbench, then", 760, 590);
-    text("bake the dough in the oven.", 760, 625);
+    text("bake the dough in the oven", 760, 625);
+    text("at 175°C.", 760, 660);
   }
 
   // ------------------------------
   // PAGE 2
   // ------------------------------
   else if (recipePage === 1) {
-    text("Step 1: Pantry", 240, 250);
-    text("Find all the ingredients", 240, 300);
-    text("you need for the recipe.", 240, 335);
+    textSize(40);
+    text("Sun-Dried Tomato", 240, 220);
+    text("Sourdough", 240, 270);
+    textSize(25);
+    text("This recipe requires", 240, 350);
+    text("an extra special ingredient!", 240, 385);
 
-    text("You can keep checking", 240, 400);
-    text("the counters to see", 240, 435);
-    text("what is still missing.", 240, 470);
+    text("You can keep checking", 240, 450);
+    text("the counters to see", 240, 485);
+    text("what is still missing.", 240, 520);
 
-    text("Current progress:", 760, 250);
-    text("- Flour: " + flourCounter + "/3", 760, 320);
-    text("- Water: " + waterCounter + "/2", 760, 370);
-    text("- Starter: " + starterCounter + "/1", 760, 420);
-    text("- Salt: " + saltCounter + "/1", 760, 470);
+    text("Ingredients:", 760, 200);
+    text("- Flour: " + flourCounter + "/3", 760, 250);
+    text("- Water: " + waterCounter + "/2", 760, 305);
+    text("- Starter: " + starterCounter + "/1", 760, 355);
+    text("- Salt: " + saltCounter + "/1", 760, 405);
+    text("- Tomatoes: " + tomatoCounter + "/2", 760, 455);
 
-    text("Once everything is collected,", 760, 550);
-    text("go to the workbench.", 760, 585);
+    text("Combine all ingredients,", 760, 590);
+    text("bake at 175°C.", 760, 625);
   }
 
   // ------------------------------
   // PAGE 3
   // ------------------------------
   else if (recipePage === 2) {
-    text("Step 2: Workbench + Oven", 240, 250);
-    text("Drag ingredients into the bowl", 240, 300);
-    text("on the workbench to combine them.", 240, 335);
+    textSize(40);
+    text("Blueberry Crumble", 240, 220);
+    text("Sourdough", 240, 270);
+    textSize(25);
+    text("This recipe requires", 240, 350);
+    text("two new ingredients!", 240, 385);
 
-    text("After that, move to the oven", 240, 420);
-    text("to bake the bread.", 240, 455);
+    text("You can keep checking", 240, 450);
+    text("the counters to see", 240, 485);
+    text("what is still missing.", 240, 520);
 
-    text("Remember:", 760, 250);
-    text("- Watch your energy", 760, 320);
-    text("- Finish orders before resting", 760, 370);
-    text("- Balance speed and accuracy", 760, 420);
+    text("Ingredients:", 760, 200);
+    text("- Flour: " + flourCounter + "/3", 760, 250);
+    text("- Water: " + waterCounter + "/2", 760, 305);
+    text("- Starter: " + starterCounter + "/1", 760, 355);
+    text("- Salt: " + saltCounter + "/1", 760, 405);
+    text("- Blueberries: " + blueberryCounter + "/3", 760, 455);
+    text("- Sugar: " + sugarCounter + "/2", 760, 505);
 
-    text("Good luck baking!", 760, 540);
+    text("Combine all ingredients,", 760, 590);
+    text("bake at 175°C.", 760, 625);
+  }
+
+  // ------------------------------
+  // PAGE 4
+  // ------------------------------
+  else if (recipePage === 3) {
+    textSize(40);
+    text("Apple Cinnamon", 240, 220);
+    text("Sourdough", 240, 270);
+    textSize(25);
+    text("This recipe is perfect", 240, 350);
+    text("for the Fall time!", 240, 385);
+
+    text("You can keep checking", 240, 450);
+    text("the counters to see", 240, 485);
+    text("what is still missing.", 240, 520);
+
+    text("Ingredients:", 760, 200);
+    text("- Flour: " + flourCounter + "/3", 760, 250);
+    text("- Water: " + waterCounter + "/2", 760, 305);
+    text("- Starter: " + starterCounter + "/1", 760, 355);
+    text("- Salt: " + saltCounter + "/1", 760, 405);
+    text("- Apples: " + appleCounter + "/3", 760, 455);
+    text("- Cinnamon: " + cinnamonCounter + "/1", 760, 505);
+
+    text("Combine all ingredients,", 760, 590);
+    text("bake at 175°C.", 760, 625);
   }
 
   // Optional: page number
@@ -92,7 +135,7 @@ function drawRecipe() {
   textSize(20);
   text(
     "Page " + (recipePage + 1) + " / " + (LAST_RECIPE_PAGE + 1),
-    width / 2,
+    width / 2 - 100,
     685,
   );
 
@@ -115,23 +158,6 @@ function recipeMousePressed() {
 
   // top left = previous page
   else if (isHover(recipePrevBtn) && recipePage > 0) {
-    recipePage--;
-  }
-}
-
-// ------------------------------
-// Keyboard input for recipe screen
-// ------------------------------
-function recipeKeyPressed() {
-  if (
-    (key === "d" || key === "D" || keyCode === RIGHT_ARROW) &&
-    recipePage < LAST_RECIPE_PAGE
-  ) {
-    recipePage++;
-  } else if (
-    (key === "a" || key === "A" || keyCode === LEFT_ARROW) &&
-    recipePage > 0
-  ) {
     recipePage--;
   }
 }

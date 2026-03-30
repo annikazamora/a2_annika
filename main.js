@@ -63,7 +63,7 @@ let cinnamonCounter = 0;
 let sugarCounter = 0;
 let tomatoCounter = 0;
 let recipePage = 0;
-const LAST_RECIPE_PAGE = 2;
+const LAST_RECIPE_PAGE = 3;
 recipeClicked = false;
 
 // Sound effects
@@ -77,7 +77,7 @@ let trash;
 
 function preload() {
   // Load all images
-  for (let i = 0; i < 53; i++) {
+  for (let i = 0; i < 55; i++) {
     let name = loadImage(`libraries/assets/images/${i}.png`);
     allimg.push(name);
   }
