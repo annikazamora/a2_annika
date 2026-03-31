@@ -1,8 +1,8 @@
 // ------------------------------
 // Recipe page-turn hitboxes
 // ------------------------------
-const recipeNextBtn = { x: 1070, y: 220, w: 120, h: 120 }; // top right of book
-const recipePrevBtn = { x: 275, y: 220, w: 120, h: 120 }; // top left of book
+const recipeNextBtn = { x: 1115, y: 180, w: 70, h: 70 };
+const recipePrevBtn = { x: 235, y: 180, w: 70, h: 70 };
 
 // ------------------------------
 // Main draw function for recipe screen
@@ -13,6 +13,14 @@ function drawRecipe() {
   imageMode(CENTER);
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
   image(allimg[51], width / 2, 440, 1200, 650); // recipe book image
+
+  // Arrow buttons
+  if (recipePage !== 0) {
+    image(allimg[53], recipePrevBtn.x, recipePrevBtn.y, 70, 70); // left arrow
+  }
+  if (recipePage !== LAST_RECIPE_PAGE) {
+    image(allimg[54], recipeNextBtn.x, recipeNextBtn.y, 70, 70); // right arrow
+  }
 
   fill(0);
   textAlign(LEFT, CENTER);
@@ -138,26 +146,52 @@ function drawRecipe() {
     width / 2 - 100,
     685,
   );
-
-  // Optional: invisible click zones for debugging
-  // noFill();
-  // stroke(255, 0, 0);
-  // rectMode(CENTER);
-  // rect(recipePrevBtn.x, recipePrevBtn.y, recipePrevBtn.w, recipePrevBtn.h);
-  // rect(recipeNextBtn.x, recipeNextBtn.y, recipeNextBtn.w, recipeNextBtn.h);
 }
 
 // ------------------------------
 // Mouse input for recipe screen
 // ------------------------------
 function recipeMousePressed() {
-  // top right = next page
-  if (isHover(recipeNextBtn) && recipePage < LAST_RECIPE_PAGE) {
+  // right arrow = next page
+  if (
+    recipePage < LAST_RECIPE_PAGE &&
+    isOpaqueImageClick(allimg[54], recipeNextBtn)
+  ) {
     recipePage++;
   }
 
-  // top left = previous page
-  else if (isHover(recipePrevBtn) && recipePage > 0) {
+  // left arrow = previous page
+  else if (recipePage > 0 && isOpaqueImageClick(allimg[53], recipePrevBtn)) {
     recipePage--;
   }
+}
+
+function isOpaqueImageClick(img, btn, alphaThreshold = 10) {
+  // convert mouse position into the image's top-left based coordinate system
+  let left = btn.x - btn.w / 2;
+  let top = btn.y - btn.h / 2;
+
+  // mouse must first be inside the image bounds
+  if (
+    mouseX < left ||
+    mouseX > left + btn.w ||
+    mouseY < top ||
+    mouseY > top + btn.h
+  ) {
+    return false;
+  }
+
+  // map mouse position on drawn image back to original image pixels
+  let imgX = floor(map(mouseX, left, left + btn.w, 0, img.width));
+  let imgY = floor(map(mouseY, top, top + btn.h, 0, img.height));
+
+  // keep values in bounds
+  imgX = constrain(imgX, 0, img.width - 1);
+  imgY = constrain(imgY, 0, img.height - 1);
+
+  // get pixel RGBA from the source image
+  let pixel = img.get(imgX, imgY);
+
+  // pixel[3] is alpha
+  return pixel[3] > alphaThreshold;
 }
