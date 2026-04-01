@@ -29,7 +29,6 @@ function drawNavbar() {
   rectMode(CORNER);
   noFill();
   rect(155, 30, 300, 20, 20); // Border for energy bar
-
   if (energy < 30) {
     fill(255, 0, 0); // Red color for low energy
   } else if (energy < 60) {
@@ -44,10 +43,6 @@ function drawNavbar() {
   rect(width - 50, 250, 20, 400, 20);
   fill(27, 158, 22); // green money bar
   rect(width - 50, 250 + 400 - money * 4, 20, money * 4, 20);
-
-  // ------------------------------------------------------------
-  // Button visuals
-  // ------------------------------------------------------------
 
   // Button information
   const homeBtn = {
@@ -79,6 +74,18 @@ function drawNavbar() {
   drawButton(homeBtn, disabled);
   drawButton(recipeBtn, disabled);
   drawButton(endBtn, disabled);
+
+  if (day >= 2) {
+    const shopBtn = {
+      x: 75,
+      y: height - 75,
+      w: 100,
+      h: 100,
+      label: "SHOP",
+    };
+
+    drawButton(shopBtn, disabled);
+  }
 }
 
 // ------------------------------------------------------------
@@ -86,35 +93,29 @@ function drawNavbar() {
 // ------------------------------------------------------------
 // Called from main.js on every mouse click, regardless of the current screen
 function navbarMousePressed() {
-  if (currentScreen === "sleep") return;
+  if (currentScreen === "sleep") return; // buttons are disabled on sleep screen
 
   const recipeBtn = { x: width - 210, y: 90, w: 370, h: 50 };
   const endBtn = { x: 260, y: 90, w: 170, h: 50 };
-  const homeBtn = { x: 100, y: 90, w: 150, h: 50 };
+  const homeBtn = { x: 100, y: 90, w: 130, h: 50 };
+  const shopBtn = { x: 75, y: height - 75, w: 100, h: 100, label: "SHOP" };
 
+  // Send the player to the recipe or end screens
   if (isHover(recipeBtn)) {
     if (currentScreen !== "recipe") {
-      prevScreen = currentScreen;
+      prevScreen = currentScreen; // Store the current screen before going to recipe
       currentScreen = "recipe";
-      recipePage = 0;
-      recipeClicked = true;
     } else {
-      currentScreen = prevScreen;
-      recipeClicked = false;
+      currentScreen = prevScreen; // Return to the previous screen if the recipe button is clicked again
     }
   } else if (isHover(endBtn)) {
-    if (currentScreen === "recipe") {
-      recipeClicked = false;
-    } else {
-      prevScreen = currentScreen;
-    }
+    prevScreen = currentScreen; // Store the current screen before going to end
     currentScreen = "end";
-  } else if (currentScreen !== "home" && isHover(homeBtn)) {
-    if (currentScreen === "recipe") {
-      recipeClicked = false;
-    } else {
-      prevScreen = currentScreen;
-    }
+  } else if (isHover(homeBtn) && currentScreen !== "home") {
+    prevScreen = currentScreen; // Store the current screen before going to home
     currentScreen = "home";
+  } else if (isHover(shopBtn)) {
+    prevScreen = currentScreen; // Store the current screen before going to shop
+    currentScreen = "shop";
   }
 }

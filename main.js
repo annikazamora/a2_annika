@@ -56,16 +56,6 @@ let waterCounter = 0;
 let starterCounter = 0;
 let saltCounter = 0;
 
-// NEW
-let appleCounter = 0;
-let blueberryCounter = 0;
-let cinnamonCounter = 0;
-let sugarCounter = 0;
-let tomatoCounter = 0;
-let recipePage = 0;
-const LAST_RECIPE_PAGE = 3;
-recipeClicked = false;
-
 // Sound effects
 let ambiance;
 let cash;

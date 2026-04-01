@@ -14,7 +14,7 @@
 
 
 
-let warningMessage = "You need to complete all ingredients first!"; //"You need to complete all ingredients first!"; // warning if ingredients not ready
+let warningMessage = "You need to complete all ingredients first!"; // warning if ingredients not ready
 
 
 let breadDoneTimer = 0; // counts frames after baking finishes
@@ -36,7 +36,10 @@ let minTemp = 180;        // Minimum oven temp
 let maxTemp = 250;        // Maximum oven temp
 let selectedTemp = 150;   // Current oven temp (default)
 
+
+
 function drawOven() {
+
   // ------------------------------
   // Images
   // ------------------------------
@@ -50,28 +53,15 @@ function drawOven() {
   counterImg = allimg[48];
 
   // ------------------------------
-  // Determine temperatures based on level
+  // Temperature logic
   // ------------------------------
-  let temps;
-  if (level === 1) temps = [150, 200, 250];
-  else if (level === 2) temps = [150, 175, 200, 225];
-  else if (level === 3) temps = [150, 175, 200, 225, 250];
-  else temps = [150, 200, 250]; // fallback
-
-  // Adjust bakeDuration and burnTime based on selectedTemp
-  if (selectedTemp <= 150) {
+  if (selectedTemp === 150) {
     bakeDuration = 600;
     burnTime = 600;
-  } else if (selectedTemp <= 175) {
-    bakeDuration = 480;
-    burnTime = 480;
-  } else if (selectedTemp <= 200) {
+  } else if (selectedTemp === 200) {
     bakeDuration = 360;
     burnTime = 360;
-  } else if (selectedTemp <= 225) {
-    bakeDuration = 240;
-    burnTime = 240;
-  } else {
+  } else if (selectedTemp === 250) {
     bakeDuration = 180;
     burnTime = 180;
   }
@@ -82,35 +72,38 @@ function drawOven() {
   imageMode(CORNER);
   image(ovenBackground, 0, 0, width, height);
 
+  showClickBreadText = (!breadInOven && !breadDone && !breadBurnt && ingredientsDone);
+
   // ------------------------------
   // Temperature slider
   // ------------------------------
   let tempX = width / 2 - 400;
   let tempY = height / 2 + 50;
   let tempWidth = 60;
-  let tempHeight = 260;
+  let tempHeight = 250;
 
   fill(200);
   rect(tempX, tempY - tempHeight / 2 + 120, tempWidth, tempHeight, 10);
 
   let bottomY = tempY + tempHeight / 2;
+  let middleY = tempY;
   let topY = tempY - tempHeight / 2;
 
-  for (let i = 0; i < temps.length; i++) {
-    let y = map(i, 0, temps.length - 1, bottomY, topY);
-    if (selectedTemp === temps[i]) {
-      if (selectedTemp <= 150) fill(0, 150, 255);
-      else if (selectedTemp <= 175) fill(0, 200, 200);
-      else if (selectedTemp <= 200) fill(255, 165, 0);
-      else if (selectedTemp <= 225) fill(255, 100, 0);
-      else fill(255, 0, 0);
-    } else fill(150);
-    rect(tempX, y - 10, tempWidth, 20, 10);
-  }
+  let handleY;
+  if (selectedTemp === 150) handleY = bottomY;
+  else if (selectedTemp === 200) handleY = middleY;
+  else handleY = topY;
+
+  if (selectedTemp === 150) fill(0, 150, 255);
+  else if (selectedTemp === 200) fill(255, 165, 0);
+  else fill(255, 0, 0);
+
+  rect(tempX, handleY - 10, tempWidth, 20, 10);
 
   fill(0);
   textSize(20);
   text("Click to set temperature", 260, 250);
+
   textAlign(CENTER, TOP);
   text(selectedTemp + "°C", tempX, tempY + tempHeight / 2 + 15);
 
@@ -153,7 +146,8 @@ function drawOven() {
     textSize(28);
     fill(200, 0, 0);
     text(warningMessage, width / 2, 190);
-  } else if (!breadInOven && !breadDone && !breadBurnt) {
+
+  } else if (showClickBreadText) {
     textSize(28);
     fill(0);
     text("Click bread to bake!", width / 2, 80);
@@ -174,7 +168,7 @@ function drawOven() {
 
     if (showTooEarlyMessage) {
       fill(200, 50, 50);
-      text("Not done baking!", width / 2 - 30, 115);
+      text("Not done baking!", width / 2 - 30, 155);
     }
 
     image(bakedBreadImg, width / 2 - 30, ovenY + 35, 220, 140);
@@ -200,7 +194,7 @@ function drawOven() {
     breadReadyForEndScreen = true;
 
   } else if (ingredientsDone) {
-    // Only show raw bread on counter if ingredients are done
+    // ONLY show bread if ingredients are done
     image(breadImg, breadX, breadY, 220, 140);
   }
 
@@ -244,23 +238,12 @@ function ovenMousePressed() {
   // ------------------------------
   // Click temperature slider
   // ------------------------------
-  if (
-    mouseX > tempX - tempWidth / 2 &&
-    mouseX < tempX + tempWidth / 2 &&
-    mouseY > tempY - tempHeight / 2 &&
-    mouseY < tempY + tempHeight / 2
-  ) {
-    let temps;
-    if (level === 1) temps = [150, 200, 250];
-    else if (level === 2) temps = [150, 175, 200, 225];
-    else if (level === 3) temps = [150, 175, 200, 225, 250];
-    else temps = [150, 200, 250];
+  if (mouseX > tempX - tempWidth / 2 && mouseX < tempX + tempWidth / 2 &&
+      mouseY > tempY - tempHeight / 2 && mouseY < tempY + tempHeight / 2) {
 
-    let currentIndex = temps.indexOf(selectedTemp);
-    if (currentIndex === -1) currentIndex = temps.length - 1;
-
-    let nextIndex = (currentIndex + 1) % temps.length;
-    selectedTemp = temps[nextIndex];
+    if (selectedTemp === 150) selectedTemp = 200;
+    else if (selectedTemp === 200) selectedTemp = 250;
+    else selectedTemp = 150;
 
     console.log("Temperature set to: " + selectedTemp + "°C");
     return;
@@ -276,31 +259,31 @@ function ovenMousePressed() {
     mouseY < counterBreadY + breadH / 2;
 
   if (clickedCounterBread) {
-    // ------------------------------
-    // Prevent baking if ingredients are not ready
-    // ------------------------------
+
+    // 🚫 BLOCK if ingredients not done
     if (!ingredientsDone) {
       showWarning = true;
-      return; // stop further execution
+      return;
     }
 
-    // Ingredients done, hide warning
-    showWarning = false;
+    // ✅ Allow baking
+    if (!breadInOven && !breadDone && !breadBurnt) {
+      breadInOven = true;
 
-    breadInOven = true;
+      if (!timer.isPlaying()) {
+        timer.setVolume(3);
+        timer.play();
+      }
 
-    if (!timer.isPlaying()) {
-      timer.setVolume(3);
-      timer.play();
+      bakeTimer = 0;
+      breadDone = false;
+      breadBurnt = false;
+      showTooEarlyMessage = false;
+      breadReadyForEndScreen = false;
+
+      energy -= int(random(1, 4));
     }
 
-    bakeTimer = 0;
-    breadDone = false;
-    breadBurnt = false;
-    showTooEarlyMessage = false;
-    breadReadyForEndScreen = false;
-
-    energy -= int(random(1, 4));
     return;
   }
 
@@ -314,20 +297,19 @@ function ovenMousePressed() {
     mouseY < ovenBreadY + breadH / 2;
 
   if (breadInOven && clickedOvenBread) {
+
     if (bakeTimer < bakeDuration) {
       showTooEarlyMessage = true;
     } else {
+
       let burnWindow;
+
       if (selectedTemp === 150) burnWindow = 200;
-      else if (selectedTemp === 175) burnWindow = 180;
       else if (selectedTemp === 200) burnWindow = 180;
-      else if (selectedTemp === 225) burnWindow = 150;
       else burnWindow = 120;
 
       if (bakeTimer >= bakeDuration && bakeTimer <= bakeDuration + burnWindow) {
         breadDone = true;
-        money += 10;
-        bread += 1;
       } else if (bakeTimer > bakeDuration + burnWindow) {
         breadBurnt = true;
       }
@@ -339,12 +321,15 @@ function ovenMousePressed() {
 
       breadInOven = false;
 
-      if (timer.isPlaying()) timer.stop();
+      if (timer.isPlaying()) {
+        timer.stop();
+      }
 
       bakeTimer = 0;
       showTooEarlyMessage = false;
       breadReadyForEndScreen = true;
     }
+
     return;
   }
 
@@ -352,9 +337,12 @@ function ovenMousePressed() {
   // Click finished bread → end screen
   // ------------------------------
   if (breadReadyForEndScreen && clickedOvenBread) {
+
     currentScreen = "end";
 
-    if (timer.isPlaying()) timer.stop();
+    if (timer.isPlaying()) {
+      timer.stop();
+    }
 
     // Reset state
     breadInOven = false;
@@ -363,6 +351,7 @@ function ovenMousePressed() {
     bakeTimer = 0;
     showTooEarlyMessage = false;
     breadReadyForEndScreen = false;
+
     return;
   }
 }

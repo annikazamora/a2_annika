@@ -9,29 +9,25 @@
 //   allimg[9]  → bowl with dough (9.png)
 
 // ── Recipes ─────────────────────────────────────────────────────────────────
+// Level 1: classic sourdough loaf
 const BREAD_RECIPE = { flour: 3, water: 2, starter: 1, salt: 1 };
-const MILK_BREAD_RECIPE = { flour: 4, water: 1, starter: 2, salt: 1 };
-const TOMATO_BREAD_RECIPE = {
-  flour: 3,
-  water: 2,
-  starter: 1,
-  salt: 1,
-  tomato: 2,
-};
 
-// Returns the active recipe object based on current day and level.
+// Level 2+: enriched milk bread (new unlock)
+const MILK_BREAD_RECIPE = { flour: 4, water: 1, starter: 2, salt: 1 };
+
+// Returns the active recipe object based on current level
 function wbActiveRecipe() {
-  if (day >= 2) return TOMATO_BREAD_RECIPE;
-  return level >= 2 ? MILK_BREAD_RECIPE : BREAD_RECIPE;
+  return wbLevel >= 2 ? MILK_BREAD_RECIPE : BREAD_RECIPE;
 }
 
 // ── Level thresholds ─────────────────────────────────────────────────────────
-let level = 1;
+// wbLevel is set in wbRefreshLevel() every frame so it always matches `bread`
+let wbLevel = 1; // 1, 2, or 3
 
 function wbRefreshLevel() {
-  if (bread >= 5) level = 3;
-  else if (bread >= 3) level = 2;
-  else level = 1;
+  if (bread >= 5) wbLevel = 3;
+  else if (bread >= 3) wbLevel = 2;
+  else wbLevel = 1;
 }
 
 // ── Styling map ─────────────────────────────────────────────────────────────
@@ -40,73 +36,49 @@ const INGREDIENT_STYLES = {
   water: { bg: [180, 220, 255], label: "WATER", emoji: "💧", imgIndex: 13 },
   starter: { bg: [245, 225, 185], label: "STARTER", emoji: "🫙", imgIndex: 6 },
   salt: { bg: [240, 240, 240], label: "SALT", emoji: "🧂", imgIndex: 5 },
-  tomato: {
-    bg: [210, 80, 70],
-    label: "SUNDRIED TOMATOES",
-    emoji: "🍅",
-    imgIndex: 41,
-  },
-  blueberry: {
-    bg: [90, 110, 200],
-    label: "BLUEBERRY",
-    emoji: "🫐",
-    imgIndex: 38,
-  },
-  sugar: { bg: [245, 245, 245], label: "SUGAR", emoji: "🍚", imgIndex: 40 },
-  cinnamon: {
-    bg: [160, 95, 55],
-    label: "CINNAMON",
-    emoji: "🤎",
-    imgIndex: 39,
-  },
-  apple: { bg: [210, 60, 50], label: "APPLE", emoji: "🍎", imgIndex: 37 },
 };
 
 // ── Workbench state ──────────────────────────────────────────────────────────
+// wbContents persists across screen switches so the bowl is never wiped
+// when the player navigates away and returns.
 let wbIngredients = [];
 let wbBowl = {};
-let wbContents = {};
+let wbContents = {}; // ← NOT reset on re-entry; survives screen changes
 let wbDragging = null;
 let wbMessage = "";
 let wbMessageTimer = 0;
 let wbShowRecipe = false;
+
+// Trash-can button geometry (set in drawWorkbench each frame)
 let wbTrashBtn = {};
-let wbTrashHovering = false;
 
 // ── initWorkbench ────────────────────────────────────────────────────────────
+// Called ONCE from main.js setup().  Does NOT clear wbContents so the bowl
+// survives if the player switches screens mid-bake.
 function initWorkbench() {
   wbDragging = null;
   wbMessage = "";
   wbMessageTimer = 0;
   wbShowRecipe = false;
+  // wbContents intentionally left untouched here
 
   wbBowl = { x: width / 2, y: height * 0.43, w: 200, h: 130 };
   _wbRebuildIngredients();
 }
 
 // ── Called every time the player ENTERS the workbench screen ─────────────────
+// Syncs ingredient counts from the global pantry counters so items collected
+// in the pantry immediately appear here.
 function wbOnEnter() {
   _wbRebuildIngredients();
 }
 
 // Rebuild the ingredient token list from live pantry counters.
+// Pantry counters are the single source of truth — they are decremented when
+// an ingredient goes into the bowl and restored when the bowl is trashed.
 function _wbRebuildIngredients() {
   wbIngredients = [];
-
-  const names = ["flour", "water", "starter", "salt"];
-
-  if (day >= 2) {
-    names.push("tomato");
-  }
-
-  if (day >= 5) {
-    names.push("blueberry", "sugar", "cinnamon", "apple");
-  }
-
-  const spacing = 130;
-  const startX = width / 2 - ((names.length - 1) * spacing) / 2;
-  const rowY = height * 0.74;
-
+  const names = Object.keys(INGREDIENT_STYLES);
   names.forEach((name, i) => {
     const available =
       {
@@ -114,17 +86,11 @@ function _wbRebuildIngredients() {
         water: waterCounter,
         starter: starterCounter,
         salt: saltCounter,
-        tomato: tomatoCounter,
-        blueberry: blueberryCounter,
-        sugar: sugarCounter,
-        cinnamon: cinnamonCounter,
-        apple: appleCounter,
       }[name] || 0;
-
     wbIngredients.push({
       name,
-      x: startX + i * spacing,
-      y: rowY,
+      x: 100 + i * 130,
+      y: height * 0.8,
       w: 100,
       h: 100,
       count: available,
@@ -144,8 +110,13 @@ function wbRecipeComplete() {
 function drawWorkbench() {
   screen = "workbench";
   wbRefreshLevel();
+
+  // Rebuild ingredient tokens every frame from live pantry counters.
+  // This means no matter how the player arrives here (navbar, pantry button,
+  // returning from oven, etc.) the tokens always reflect what was collected.
   _wbRebuildIngredients();
 
+  // 1. Background
   imageMode(CORNER);
   if (allimg[31]) {
     image(allimg[31], 0, 0, width, height);
@@ -153,18 +124,21 @@ function drawWorkbench() {
     background(220, 210, 205);
   }
 
+  // 2. Workbench table
   imageMode(CENTER);
   const wbImgW = width * 0.72;
   const wbImgH = wbImgW * (9 / 16);
   const wbImgY = height * 0.62;
   if (allimg[14]) image(allimg[14], width / 2, wbImgY, wbImgW, wbImgH);
 
+  // 3. Bowl position
   const counterY = wbImgY - wbImgH * 0.41;
   wbBowl.x = width / 2 - 15;
   wbBowl.y = counterY;
   wbBowl.w = 400;
   wbBowl.h = 260;
 
+  // 4. Bowl image
   imageMode(CENTER);
   const bowlImg = wbRecipeComplete() ? allimg[9] : allimg[8];
   if (bowlImg) {
@@ -173,38 +147,89 @@ function drawWorkbench() {
     _drawWbBowlFallback();
   }
 
+  // 5. Bowl contents
   drawWbBowlContents();
 
+  // 6. Recipe card (only if open)
   if (wbShowRecipe) drawWbRecipe();
 
+  // 7. Ingredient tokens
   drawWbIngredients();
+
+  // 8. Bake button
   drawWbBakeButton();
+
+  // 9. Trash-can button
   drawWbTrashButton();
+
+  // 10. Level + bread progress banner
+  drawWbLevelBanner();
+
+  // 11. Dragged token
   drawWbDragging();
+
+  // 12. Toast message
   drawWbMessage();
 
   cursor(wbIsOverIngredient() ? HAND : ARROW);
+
+  if (work == false) {
+    tut = "Click on the ingredients   ";
+    tut2 = "to combine them in the bowl.";
+    tut3 = "";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
+}
+
+// ── Level / progress banner ───────────────────────────────────────────────────
+function drawWbLevelBanner() {
+  wbRefreshLevel();
+
+  // Goals per level
+  const goals = [3, 5, Infinity]; // breads needed to reach next level
+  const labels = ["Classic Sourdough", "Milk Bread (lv2)", "Milk Bread (lv3)"];
+  const goal = goals[wbLevel - 1];
+  const progress =
+    wbLevel === 3
+      ? "MAX LEVEL"
+      : `${bread} / ${goal} 🍞 to Level ${wbLevel + 1}`;
+
+  rectMode(CORNER);
+  fill(255, 245, 220, 220);
+  stroke(190, 150, 90);
+  strokeWeight(1.5);
+  rect(10, 10, 260, 56, 8);
+  noStroke();
+
+  fill(80, 40, 10);
+  textSize(13);
+  textAlign(LEFT, TOP);
+  text(`Level ${wbLevel}  –  ${labels[wbLevel - 1]}`, 20, 18);
+
+  fill(100, 60, 20);
+  textSize(11);
+  text(progress, 20, 38);
+
+  rectMode(CORNER);
+  imageMode(CORNER);
 }
 
 // ── Trash-can button ─────────────────────────────────────────────────────────
 function drawWbTrashButton() {
-  const w = 260;
-  const h = 300;
+  const w = 260,
+    h = 300;
   wbTrashBtn = { x: width - 170, y: height - 220, w, h };
   const hover = isHover(wbTrashBtn);
 
-  if (hover && !wbTrashHovering && trash) {
-    trash.stop();
-    trash.play();
-  }
-  wbTrashHovering = hover;
-
+  // 44.png = closed lid (default), 45.png = open lid (hover)
   const trashImg = hover ? allimg[45] : allimg[44];
 
   imageMode(CENTER);
   if (trashImg) {
     image(trashImg, wbTrashBtn.x, wbTrashBtn.y, w, h);
   } else {
+    // Fallback if PNGs aren't loaded yet
     rectMode(CENTER);
     fill(hover ? color(210, 60, 60) : color(185, 50, 50));
     stroke(130, 20, 20);
@@ -221,7 +246,7 @@ function drawWbTrashButton() {
   imageMode(CORNER);
 }
 
-// Trash the bowl — ingredients are gone
+// Trash the bowl — ingredients are GONE, player must go back to pantry
 function wbTrashBowl() {
   const hadAnything = Object.values(wbContents).some((v) => v > 0);
   if (!hadAnything) {
@@ -230,9 +255,12 @@ function wbTrashBowl() {
     return;
   }
 
+  // Ingredients are permanently discarded — NOT returned to pantry.
+  // The player must go back to the pantry to collect more.
   wbContents = {};
   _wbRebuildIngredients();
 
+  // Energy penalty for wasting ingredients
   const penalty = floor(random(5, 10));
   energy = max(0, energy - penalty);
 
@@ -290,6 +318,12 @@ function drawWbToken(x, y, w, h, name, count) {
     text(`×${count}`, x + w / 2 - 8, y - h / 2 + 10);
   }
 
+  fill(60, 30, 10);
+  noStroke();
+  textSize(11);
+  textAlign(CENTER, CENTER);
+  text(style.label, x, y + h / 2 + 10);
+
   rectMode(CORNER);
   imageMode(CORNER);
 }
@@ -343,17 +377,11 @@ function _drawWbBowlFallback() {
 // ── Recipe card ───────────────────────────────────────────────────────────────
 function drawWbRecipe() {
   const recipe = wbActiveRecipe();
-  const recipeName =
-    day >= 2
-      ? "🍅 TOMATO BREAD"
-      : level >= 2
-        ? "🥛 MILK BREAD"
-        : "🍞 SOURDOUGH";
-
-  const x = width - 200;
-  const y = 110;
-  const w = 165;
-  const h = 215;
+  const recipeName = wbLevel >= 2 ? "🥛 MILK BREAD" : "🍞 SOURDOUGH";
+  const x = width - 200,
+    y = 110,
+    w = 165,
+    h = 215;
 
   rectMode(CORNER);
   fill(255, 248, 215);
@@ -377,7 +405,6 @@ function drawWbRecipe() {
   for (const [name, needed] of Object.entries(recipe)) {
     const have = wbContents[name] || 0;
     const done = have >= needed;
-
     fill(done ? color(50, 140, 50) : color(80, 40, 10));
     textAlign(LEFT, TOP);
     text(
@@ -385,7 +412,6 @@ function drawWbRecipe() {
       x + 10,
       ty,
     );
-
     fill(done ? color(50, 140, 50) : color(180, 60, 60));
     textAlign(RIGHT, TOP);
     text(`${have}/${needed}`, x + w - 10, ty);
@@ -420,13 +446,11 @@ function drawWbBakeButton() {
 function drawWbRecipeBtn() {
   const btn = wbGetRecipeBtn();
   const hover = isHover(btn);
-
   rectMode(CORNER);
   fill(hover ? color(200, 170, 90) : color(175, 145, 70));
   stroke(130, 100, 40);
   strokeWeight(2);
   rect(btn.x, btn.y, btn.w, btn.h, 10);
-
   fill(255);
   noStroke();
   textSize(13);
@@ -436,7 +460,6 @@ function drawWbRecipeBtn() {
     btn.x + btn.w / 2,
     btn.y + btn.h / 2,
   );
-
   rectMode(CORNER);
 }
 
@@ -481,20 +504,21 @@ function wbIsOverIngredient() {
       mouseX < ing.x + ing.w / 2 &&
       mouseY > ing.y - ing.h / 2 &&
       mouseY < ing.y + ing.h / 2
-    ) {
+    )
       return true;
-    }
   }
   return false;
 }
 
 // ── Input handlers ────────────────────────────────────────────────────────────
 function workbenchMousePressed() {
+  // Trash-can first
   if (isHover(wbTrashBtn)) {
     wbTrashBowl();
     return;
   }
 
+  // Ingredient tokens — click to add one to the bowl
   for (const ing of wbIngredients) {
     if (
       ing.count > 0 &&
@@ -506,39 +530,15 @@ function workbenchMousePressed() {
       wbContents[ing.name] = (wbContents[ing.name] || 0) + 1;
       ing.count--;
 
+      // Deduct from the global pantry counter — this is the source of truth
       if (ing.name === "flour") flourCounter = max(0, flourCounter - 1);
       else if (ing.name === "water") waterCounter = max(0, waterCounter - 1);
       else if (ing.name === "starter")
         starterCounter = max(0, starterCounter - 1);
       else if (ing.name === "salt") saltCounter = max(0, saltCounter - 1);
-      else if (ing.name === "tomato") tomatoCounter = max(0, tomatoCounter - 1);
-      else if (ing.name === "blueberry")
-        blueberryCounter = max(0, blueberryCounter - 1);
-      else if (ing.name === "sugar") sugarCounter = max(0, sugarCounter - 1);
-      else if (ing.name === "cinnamon")
-        cinnamonCounter = max(0, cinnamonCounter - 1);
-      else if (ing.name === "apple") appleCounter = max(0, appleCounter - 1);
 
-      if (ing.name === "flour" && Flour) {
-        Flour.stop();
-        Flour.play();
-      } else if (ing.name === "water" && Water) {
-        Water.stop();
-        Water.play();
-      } else if (ing.name === "starter" && Starter) {
-        Starter.stop();
-        Starter.play();
-      } else if (ing.name === "salt" && Salt) {
-        Salt.stop();
-        Salt.play();
-      }
-
-      if (wbRecipeComplete() && Kneading) {
-        Kneading.stop();
-        Kneading.play();
-      }
-
-      const energyLoss = floor(random(1, 4));
+      // Reduced energy cost (1–3 instead of 4–8)
+      let energyLoss = floor(random(1, 3));
       energy = max(0, energy - energyLoss);
 
       wbMessage = `Added ${INGREDIENT_STYLES[ing.name].emoji} ${INGREDIENT_STYLES[ing.name].label}! (-${energyLoss} ⚡)`;
@@ -559,6 +559,11 @@ function workbenchKeyPressed() {
   if (keyCode === ENTER) wbCheckRecipe();
 }
 
+// Pantry counters (flourCounter, waterCounter, etc.) are the single source of
+// truth. They are decremented in workbenchMousePressed when an ingredient moves
+// into the bowl, and restored in wbTrashBowl when the bowl is cleared.
+// _wbRebuildIngredients() reads them directly — no separate sync needed.
+
 // ── Recipe check / bake ───────────────────────────────────────────────────────
 function wbCheckRecipe() {
   const recipe = wbActiveRecipe();
@@ -572,6 +577,7 @@ function wbCheckRecipe() {
     else if (have > needed) excess.push(INGREDIENT_STYLES[name].label);
   }
 
+  // Also fail if the bowl has ingredients NOT in this recipe
   for (const name of Object.keys(wbContents)) {
     if ((wbContents[name] || 0) > 0 && recipe[name] === undefined) {
       excess.push(INGREDIENT_STYLES[name]?.label || name);
@@ -579,17 +585,19 @@ function wbCheckRecipe() {
   }
 
   if (missing.length === 0 && excess.length === 0) {
+    // ✅ Correct recipe
     ingredientsDone = true;
-    wbContents = {};
+    wbContents = {}; // Clear bowl for next loaf
     _wbRebuildIngredients();
     currentScreen = "oven";
   } else if (missing.length > 0) {
-    wbMessage = "Wrong ingredients! Keep trying.";
+    wbMessage = `Missing: ${missing.join(", ")}`;
     wbMessageTimer = 140;
   } else {
+    // ❌ Wrong amounts — trash penalty
     const penalty = floor(random(4, 8));
     energy = max(0, energy - penalty);
-    wbMessage = `Wrong ingredients! (-${penalty} ⚡)`;
+    wbMessage = `Too much: ${excess.join(", ")}  (-${penalty} ⚡)`;
     wbMessageTimer = 140;
   }
 }
