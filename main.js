@@ -38,6 +38,16 @@ let playing = false; // track if the intro video is currently playing
 let videoFinished = true; // track if the intro video has finished playing
 let ingredientsDone = false; // track if player has collected all ingredients (starts at false, becomes true when they do) --- IGNORE ---
 
+// NEW
+let appleCounter = 0;
+let blueberryCounter = 0;
+let cinnamonCounter = 0;
+let sugarCounter = 0;
+let tomatoCounter = 0;
+let recipePage = 0;
+const LAST_RECIPE_PAGE = 3;
+recipeClicked = false;
+
 // Tutorial popups
 let tut;
 let tut2;
