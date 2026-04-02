@@ -133,12 +133,24 @@ function drawHome() {
         let x = startX;
         let y = bottomY - i * (orderH + orderGap);
 
+        let recipeIndex = dailyOrders[i];
+        let breadImgIndex = getRecipeImageIndex(recipeIndex);
+        let flavourName = recipeNames[recipeIndex];
+
+        // sticky note background
         image(allimg[59], x, y, orderW, orderH);
 
-        let recipeLabel = recipeNames[dailyOrders[i]];
+        // bread image top middle
+        imageMode(CENTER);
+        image(allimg[breadImgIndex], x + orderW / 2, y + 65, 100, 70);
 
-        text("Order " + (i + 1), x + orderW / 2, y + 48);
-        text(recipeLabel, x + orderW / 2, y + 78);
+        // flavour name underneath
+        imageMode(CORNER);
+        textAlign(CENTER, CENTER);
+        textSize(14);
+        fill(84, 43, 20);
+        noStroke();
+        text(flavourName, x + orderW / 2, y + 108);
       }
 
       if (inst == false) {

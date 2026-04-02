@@ -23,7 +23,7 @@
 let currentScreen = "splash"; // "home" | "pantry" | "workbench" | "oven" | "recipe"
 let bread = 0; // game state variable to track how many breads the player has (starts at 0)
 let energy = 90; // game state variable to track the player's energy (starts at 90)
-let day = 1; // game state variable to track the current day (starts at 0)
+let day = 5; // game state variable to track the current day (starts at 0)
 let money = 10;
 let game = false;
 let daytimer = 250; // timer to show the day 1 image for a few seconds before showing the home screen
@@ -80,7 +80,7 @@ let trash;
 
 function preload() {
   // Load all images
-  for (let i = 0; i < 60; i++) {
+  for (let i = 0; i < 63; i++) {
     let name = loadImage(`libraries/assets/images/${i}.png`);
     allimg.push(name);
   }
@@ -119,6 +119,18 @@ function generateOrdersForDay() {
     let randomIndex = floor(random(availableRecipes.length));
     let recipeIndex = availableRecipes[randomIndex];
     dailyOrders.push(recipeIndex);
+  }
+}
+
+function getRecipeImageIndex(recipeIndex) {
+  if (recipeIndex === 0) {
+    return 15; // plain sourdough
+  } else if (recipeIndex === 1) {
+    return 60; // tomato
+  } else if (recipeIndex === 2) {
+    return 62; // blueberry
+  } else if (recipeIndex === 3) {
+    return 61; // apple
   }
 }
 
