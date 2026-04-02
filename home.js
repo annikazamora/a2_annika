@@ -73,10 +73,23 @@ function drawHome() {
         label: "",
       };
 
+      const shopBtn = {
+        x: 100,
+        y: height - 100,
+        w: 100,
+        h: 100,
+        label: "",
+      };
+
       // Draw all buttons
       drawButton(pantryBtn);
       drawButton(workBtn);
       drawButton(ovenBtn);
+
+      if (day >= 2) {
+        drawButton(shopBtn);
+        image(allimg[57], 25, height - 150, 125, 125); // shop icon
+      }
 
       // show pantry image when hovered
       imageMode(CENTER);
@@ -90,7 +103,11 @@ function drawHome() {
 
       // ---- Cursor feedback ----
       // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
-      const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
+      const over =
+        isHover(workBtn) ||
+        isHover(pantryBtn) ||
+        isHover(ovenBtn) ||
+        isHover(shopBtn);
       cursor(over ? HAND : ARROW);
 
       if (inst == false) {
@@ -125,11 +142,16 @@ function drawHome() {
 function homeMousePressed() {
   // Do nothing if video is still playing
   if (!videoFinished) return;
+  let shopBtn;
 
   // For input checks, we only need x,y,w,h (label is optional)
   const pantryBtn = { x: 345, y: 440, w: 370, h: 520 };
   const workBtn = { x: 711, y: 544, w: 437, h: 290 };
   const ovenBtn = { x: 1025, y: 522, w: 297, h: 345 };
+
+  if (day >= 2) {
+    shopBtn = { x: 100, y: height - 100, w: 100, h: 100 };
+  }
 
   // If workbench is clicked, go to the workbench screen
   if (isHover(workBtn)) {
@@ -145,6 +167,9 @@ function homeMousePressed() {
   else if (isHover(ovenBtn)) {
     prevScreen = currentScreen;
     currentScreen = "oven";
+  } else if (day >= 2 && isHover(shopBtn)) {
+    prevScreen = currentScreen;
+    currentScreen = "shop";
   }
 }
 
