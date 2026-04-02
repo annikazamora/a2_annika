@@ -15,6 +15,66 @@ const BREAD_RECIPE = { flour: 3, water: 2, starter: 1, salt: 1 };
 // Level 2+: enriched milk bread (new unlock)
 const MILK_BREAD_RECIPE = { flour: 4, water: 1, starter: 2, salt: 1 };
 
+const RECIPES = {
+  plain: {
+    flour: 3,
+    water: 2,
+    starter: 1,
+    salt: 1,
+  },
+  tomato: {
+    flour: 3,
+    water: 2,
+    starter: 1,
+    salt: 1,
+    tomato: 2,
+  },
+  blueberry: {
+    flour: 3,
+    water: 2,
+    starter: 1,
+    salt: 1,
+    blueberry: 3,
+    sugar: 2,
+  },
+  apple: {
+    flour: 3,
+    water: 2,
+    starter: 1,
+    salt: 1,
+    apple: 3,
+    cinnamon: 1,
+    sugar: 2,
+  },
+};
+
+function getMatchedRecipe(contents) {
+  for (let breadType in RECIPES) {
+    let recipe = RECIPES[breadType];
+    let matches = true;
+
+    // check every required ingredient
+    for (let ing in recipe) {
+      if ((contents[ing] || 0) !== recipe[ing]) {
+        matches = false;
+        break;
+      }
+    }
+
+    // check for extra ingredients not in recipe
+    for (let ing in contents) {
+      if ((contents[ing] || 0) > 0 && recipe[ing] === undefined) {
+        matches = false;
+        break;
+      }
+    }
+
+    if (matches) return breadType;
+  }
+
+  return null;
+}
+
 // Returns the active recipe object based on current level
 function wbActiveRecipe() {
   return wbLevel >= 2 ? MILK_BREAD_RECIPE : BREAD_RECIPE;

@@ -4,42 +4,33 @@
 // 1) drawOven() → what the oven screen looks like
 // 2) input handlers → how the player returns to the start screen
 
-
 // ------------------------------------------------------------
 // Main draw function for oven screen
 // ------------------------------------------------------------
 // drawOven() is called from main.js
 // only when currentScreen === "oven"
 
-
-
-
 let warningMessage = "You need to complete all ingredients first!"; // warning if ingredients not ready
-
 
 let breadDoneTimer = 0; // counts frames after baking finishes
 let breadDoneDelay = 100; // show baked bread for 2 seconds (120 frames at 60 FPS)
 let showWarning = false;
 
-
 let breadInOven = false;
-let breadDone = false;     // perfectly baked
-let breadBurnt = false;    // burnt
-let bakeTimer = 0;         // counts frames while in oven
-let bakeDuration = 300;    // perfect bake time
-let burnTime = 420;        // time at which bread burns if left
+let breadDone = false; // perfectly baked
+let breadBurnt = false; // burnt
+let bakeTimer = 0; // counts frames while in oven
+let bakeDuration = 300; // perfect bake time
+let burnTime = 420; // time at which bread burns if left
 let showTooEarlyMessage = false; // flag for "not done baking"
 
 let breadReadyForEndScreen = false;
 let showClickBreadText;
-let minTemp = 180;        // Minimum oven temp
-let maxTemp = 250;        // Maximum oven temp
-let selectedTemp = 150;   // Current oven temp (default)
-
-
+let minTemp = 180; // Minimum oven temp
+let maxTemp = 250; // Maximum oven temp
+let selectedTemp = 150; // Current oven temp (default)
 
 function drawOven() {
-
   // ------------------------------
   // Images
   // ------------------------------
@@ -72,7 +63,8 @@ function drawOven() {
   imageMode(CORNER);
   image(ovenBackground, 0, 0, width, height);
 
-  showClickBreadText = (!breadInOven && !breadDone && !breadBurnt && ingredientsDone);
+  showClickBreadText =
+    !breadInOven && !breadDone && !breadBurnt && ingredientsDone;
 
   // ------------------------------
   // Temperature slider
@@ -146,7 +138,6 @@ function drawOven() {
     textSize(28);
     fill(200, 0, 0);
     text(warningMessage, width / 2, 190);
-
   } else if (showClickBreadText) {
     textSize(28);
     fill(0);
@@ -172,9 +163,7 @@ function drawOven() {
     }
 
     image(bakedBreadImg, width / 2 - 30, ovenY + 35, 220, 140);
-
   } else if (breadDone || breadBurnt) {
-
     if (breadDone) {
       image(bakedBreadImg, width / 2 - 30, ovenY + 5, 220, 140);
       textSize(50);
@@ -192,7 +181,6 @@ function drawOven() {
     text("Click bread to continue", width / 2 - 30, 205);
 
     breadReadyForEndScreen = true;
-
   } else if (ingredientsDone) {
     // ONLY show bread if ingredients are done
     image(breadImg, breadX, breadY, 220, 140);
@@ -238,9 +226,12 @@ function ovenMousePressed() {
   // ------------------------------
   // Click temperature slider
   // ------------------------------
-  if (mouseX > tempX - tempWidth / 2 && mouseX < tempX + tempWidth / 2 &&
-      mouseY > tempY - tempHeight / 2 && mouseY < tempY + tempHeight / 2) {
-
+  if (
+    mouseX > tempX - tempWidth / 2 &&
+    mouseX < tempX + tempWidth / 2 &&
+    mouseY > tempY - tempHeight / 2 &&
+    mouseY < tempY + tempHeight / 2
+  ) {
     if (selectedTemp === 150) selectedTemp = 200;
     else if (selectedTemp === 200) selectedTemp = 250;
     else selectedTemp = 150;
@@ -259,7 +250,6 @@ function ovenMousePressed() {
     mouseY < counterBreadY + breadH / 2;
 
   if (clickedCounterBread) {
-
     // 🚫 BLOCK if ingredients not done
     if (!ingredientsDone) {
       showWarning = true;
@@ -297,11 +287,9 @@ function ovenMousePressed() {
     mouseY < ovenBreadY + breadH / 2;
 
   if (breadInOven && clickedOvenBread) {
-
     if (bakeTimer < bakeDuration) {
       showTooEarlyMessage = true;
     } else {
-
       let burnWindow;
 
       if (selectedTemp === 150) burnWindow = 200;
@@ -310,6 +298,8 @@ function ovenMousePressed() {
 
       if (bakeTimer >= bakeDuration && bakeTimer <= bakeDuration + burnWindow) {
         breadDone = true;
+        bread++;
+        breadInventory[currentreadType]++;
       } else if (bakeTimer > bakeDuration + burnWindow) {
         breadBurnt = true;
       }
@@ -337,7 +327,6 @@ function ovenMousePressed() {
   // Click finished bread → end screen
   // ------------------------------
   if (breadReadyForEndScreen && clickedOvenBread) {
-
     currentScreen = "end";
 
     if (timer.isPlaying()) {
