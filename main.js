@@ -28,6 +28,10 @@ let money = 10;
 let game = false;
 let daytimer = 250; // timer to show the day 1 image for a few seconds before showing the home screen
 
+//NEW
+let dailyOrders = [];
+let recipeNames = ["Plain", "Tomato", "Blueberry", "Apple"];
+
 // Design
 let allimg = []; // global array to store all loaded images (populated in preload())
 let font; // global variable to store the loaded font (populated in preload())
@@ -38,7 +42,6 @@ let playing = false; // track if the intro video is currently playing
 let videoFinished = true; // track if the intro video has finished playing
 let ingredientsDone = false; // track if player has collected all ingredients (starts at false, becomes true when they do) --- IGNORE ---
 
-// NEW
 let appleCounter = 0;
 let blueberryCounter = 0;
 let cinnamonCounter = 0;
@@ -77,7 +80,7 @@ let trash;
 
 function preload() {
   // Load all images
-  for (let i = 0; i < 55; i++) {
+  for (let i = 0; i < 60; i++) {
     let name = loadImage(`libraries/assets/images/${i}.png`);
     allimg.push(name);
   }
@@ -98,6 +101,27 @@ function preload() {
   font = loadFont("libraries/assets/font/playpen.ttf");
 }
 
+function getAvailableRecipesForDay() {
+  if (day === 1) {
+    return [0];
+  } else if (day >= 2 && day <= 4) {
+    return [0, 1];
+  } else {
+    return [0, 1, 2, 3];
+  }
+}
+
+function generateOrdersForDay() {
+  let availableRecipes = getAvailableRecipesForDay();
+  dailyOrders = [];
+
+  for (let i = 0; i < 3; i++) {
+    let randomIndex = floor(random(availableRecipes.length));
+    let recipeIndex = availableRecipes[randomIndex];
+    dailyOrders.push(recipeIndex);
+  }
+}
+
 // ------------------------------
 // setup() runs ONCE at the beginning
 // ------------------------------
@@ -110,6 +134,7 @@ function setup() {
   fill(84, 43, 20);
   textFont(font);
   initWorkbench();
+  generateOrdersForDay(); //NEW
 
   openday.size(width, height);
   openday.elt.muted = true; // muted to avoid browser autoplay restrictions

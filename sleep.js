@@ -36,6 +36,7 @@ function drawSleep() {
   } else {
     energy = int(random(70, 98));
     day++;
+    generateOrdersForDay();
     currentScreen = "home";
     sleepTimer = 300;
     daytimer = 250;

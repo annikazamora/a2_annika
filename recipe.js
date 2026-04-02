@@ -7,19 +7,33 @@ const recipePrevBtn = { x: 235, y: 180, w: 100, h: 100 };
 // ------------------------------
 // Main draw function for recipe screen
 // ------------------------------
+
+function getLastUnlockedRecipePage() {
+  if (day === 1) {
+    return 0; // only Plain Sourdough
+  } else if (day >= 2 && day <= 4) {
+    return 1; // Plain + Sun-Dried Tomato
+  } else if (day >= 5) {
+    return 3; // all recipes unlocked
+  }
+}
+
 function drawRecipe() {
   background(235, 223, 226);
+
+  let lastUnlockedRecipePage = getLastUnlockedRecipePage();
+  recipePage = constrain(recipePage, 0, lastUnlockedRecipePage);
 
   imageMode(CENTER);
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
   image(allimg[51], width / 2, 440, 1200, 650); // recipe book image
 
   // Arrow buttons
-  if (recipePage !== 0) {
-    image(allimg[53], recipePrevBtn.x, recipePrevBtn.y, 70, 70); // left arrow
+  if (recipePage > 0) {
+    image(allimg[53], recipePrevBtn.x, recipePrevBtn.y, 70, 70);
   }
-  if (recipePage !== LAST_RECIPE_PAGE) {
-    image(allimg[54], recipeNextBtn.x, recipeNextBtn.y, 70, 70); // right arrow
+  if (recipePage < lastUnlockedRecipePage) {
+    image(allimg[54], recipeNextBtn.x, recipeNextBtn.y, 70, 70);
   }
 
   fill(0);
@@ -80,8 +94,8 @@ function drawRecipe() {
     text("- Salt: " + saltCounter + "/1", 760, 405);
     text("- Tomatoes: " + tomatoCounter + "/2", 760, 455);
 
-    text("Combine all ingredients,", 760, 590);
-    text("bake at 175°C.", 760, 625);
+    text("Combine all ingredients,", 760, 610);
+    text("bake at 175°C.", 760, 645);
   }
 
   // ------------------------------
@@ -107,8 +121,8 @@ function drawRecipe() {
     text("- Blueberries: " + blueberryCounter + "/3", 760, 455);
     text("- Sugar: " + sugarCounter + "/2", 760, 505);
 
-    text("Combine all ingredients,", 760, 590);
-    text("bake at 175°C.", 760, 625);
+    text("Combine all ingredients,", 760, 610);
+    text("bake at 175°C.", 760, 645);
   }
 
   // ------------------------------
@@ -133,16 +147,17 @@ function drawRecipe() {
     text("- Salt: " + saltCounter + "/1", 760, 405);
     text("- Apples: " + appleCounter + "/3", 760, 455);
     text("- Cinnamon: " + cinnamonCounter + "/1", 760, 505);
+    text("- Sugar: " + sugarCounter + "/2", 760, 555);
 
-    text("Combine all ingredients,", 760, 590);
-    text("bake at 175°C.", 760, 625);
+    text("Combine all ingredients,", 760, 610);
+    text("bake at 175°C.", 760, 645);
   }
 
-  // Optional: page number
+  //page number
   textAlign(CENTER, CENTER);
   textSize(20);
   text(
-    "Page " + (recipePage + 1) + " / " + (LAST_RECIPE_PAGE + 1),
+    "Page " + (recipePage + 1) + " / " + (lastUnlockedRecipePage + 1),
     width / 2 - 100,
     685,
   );
@@ -152,16 +167,14 @@ function drawRecipe() {
 // Mouse input for recipe screen
 // ------------------------------
 function recipeMousePressed() {
-  // right arrow = next page
+  let lastUnlockedRecipePage = getLastUnlockedRecipePage();
+
   if (
-    recipePage < LAST_RECIPE_PAGE &&
+    recipePage < lastUnlockedRecipePage &&
     isOpaqueImageClick(allimg[54], recipeNextBtn)
   ) {
     recipePage++;
-  }
-
-  // left arrow = previous page
-  else if (recipePage > 0 && isOpaqueImageClick(allimg[53], recipePrevBtn)) {
+  } else if (recipePage > 0 && isOpaqueImageClick(allimg[53], recipePrevBtn)) {
     recipePage--;
   }
 }

@@ -3,6 +3,7 @@
 // ------------------------------
 function drawNavbar() {
   // Draw a simple navbar at the top of the screen
+  noStroke();
   fill(255, 255, 255, 0); // Dark gray background for navbar
   rect(width / 2, 0, width, 250); // Draw navbar rectangle
 
