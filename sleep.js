@@ -36,7 +36,10 @@ function drawSleep() {
   } else {
     energy = int(random(70, 98));
     day++;
-    generateOrdersForDay();
+
+    generateOrdersForDay(); // make 3 new randomized orders for the new day
+    recipePage = 0; // optional: reset recipe book to first page
+
     currentScreen = "home";
     sleepTimer = 300;
     daytimer = 250;

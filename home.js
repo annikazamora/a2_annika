@@ -142,7 +142,7 @@ function drawHome() {
 
         // bread image top middle
         imageMode(CENTER);
-        image(allimg[breadImgIndex], x + orderW / 2, y + 65, 100, 70);
+        image(allimg[breadImgIndex], x + orderW / 2, y + 70, 100, 70);
 
         // flavour name underneath
         imageMode(CORNER);
@@ -150,6 +150,7 @@ function drawHome() {
         textSize(14);
         fill(84, 43, 20);
         noStroke();
+        text("Order " + (3 - i), x + orderW / 2, y + 30);
         text(flavourName, x + orderW / 2, y + 108);
       }
 
