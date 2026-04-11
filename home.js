@@ -131,44 +131,47 @@ function drawHome() {
     // ------------------------------
     // Order tickets (left side, stacked upward)
     // ------------------------------
-    let orderW = 130;
-    let orderH = 130;
-    let orderGap = 0;
 
-    // left side position
-    let startX = 10;
+    if (day > 7) {
+      let orderW = 130;
+      let orderH = 130;
+      let orderGap = 0;
 
-    // this is the BOTTOM ticket position
-    let bottomY = height / 2 + 50;
+      // left side position
+      let startX = 10;
 
-    imageMode(CORNER);
-    textAlign(CENTER, CENTER);
-    textSize(16);
-    fill(84, 43, 20);
-    noStroke();
+      // this is the BOTTOM ticket position
+      let bottomY = height / 2 + 50;
 
-    for (let i = 0; i < 3; i++) {
-      let x = startX;
-      let y = bottomY - i * (orderH + orderGap);
-
-      let recipeIndex = dailyOrders[i];
-      let breadImgIndex = getRecipeImageIndex(recipeIndex);
-      let flavourName = recipeNames[recipeIndex];
-
-      // sticky note background
-      image(allimg[59], x, y, orderW, orderH);
-
-      // bread image top middle
-      imageMode(CENTER);
-      image(allimg[breadImgIndex], x + orderW / 2, y + 65, 100, 70);
-
-      // flavour name underneath
       imageMode(CORNER);
       textAlign(CENTER, CENTER);
-      textSize(14);
+      textSize(16);
       fill(84, 43, 20);
       noStroke();
-      text(flavourName, x + orderW / 2, y + 108);
+
+      for (let i = 0; i < 3; i++) {
+        let x = startX;
+        let y = bottomY - i * (orderH + orderGap);
+
+        let recipeIndex = dailyOrders[i];
+        let breadImgIndex = getRecipeImageIndex(recipeIndex);
+        let flavourName = recipeNames[recipeIndex];
+
+        // sticky note background
+        image(allimg[59], x, y, orderW, orderH);
+
+        // bread image top middle
+        imageMode(CENTER);
+        image(allimg[breadImgIndex], x + orderW / 2, y + 65, 100, 70);
+
+        // flavour name underneath
+        imageMode(CORNER);
+        textAlign(CENTER, CENTER);
+        textSize(14);
+        fill(84, 43, 20);
+        noStroke();
+        text(flavourName, x + orderW / 2, y + 108);
+      }
     }
 
     if (inst == false) {
