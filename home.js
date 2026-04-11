@@ -10,6 +10,7 @@
 // ------------------------------------------------------------
 // drawHome() is called from main.js only when:
 // currentScreen === "home"
+screen = "home";
 
 function drawHome() {
   if (!videoFinished) {
@@ -21,161 +22,66 @@ function drawHome() {
     image(video, 0, 0, width, height);
   } else {
     imageMode(CORNER);
+    // Background colour for the home screen
+    image(allimg[0], 0, 0, width, height); // background image
 
-    if (daytimer > 0) {
-      textSize(40);
-      fill(84, 43, 20);
-      image(openday, 0, 0, width, height);
-      text("DAY " + day, 640, height / 6);
-      daytimer--;
-    } else {
-      game = true;
-      openday.stop();
+    // ---- Title text ----
+    fill(255);
+    stroke(84, 43, 20);
+    strokeWeight(5);
+    textSize(30);
+    textAlign(CENTER, CENTER);
+    text("Pantry", 315, 200);
+    text("Workbench", 710, 300);
+    text("Oven", 1075, 200);
 
-      // Background colour for the home screen
-      image(allimg[0], 0, 0, width, height); // background image
+    // ---- Buttons (data only) ----
+    // These objects store the position/size/label for each button.
+    // Using objects makes it easy to pass them into drawButton()
+    // and also reuse the same information for hover checks.
+    const pantryBtn = {
+      x: 315,
+      y: 475,
+      w: 240,
+      h: 420,
+      label: "",
+    };
 
-      // ---- Title text ----
-      fill(255);
-      stroke(84, 43, 20);
-      strokeWeight(5);
-      textSize(30);
-      textAlign(CENTER, CENTER);
-      text("PANTRY", 345, 190);
-      text("WORKBENCH", 700, 300);
-      text("OVEN", 1025, 190);
+    const workBtn = {
+      x: 710,
+      y: 600,
+      w: 340,
+      h: 240,
+      label: "",
+    };
 
-      // ---- Buttons (data only) ----
-      // These objects store the position/size/label for each button.
-      // Using objects makes it easy to pass them into drawButton()
-      // and also reuse the same information for hover checks.
-      const pantryBtn = {
-        x: 345,
-        y: 440,
-        w: 370,
-        h: 520,
-        label: "",
-      };
+    const ovenBtn = {
+      x: 1075,
+      y: 565,
+      w: 240,
+      h: 280,
+      label: "",
+    };
 
-      const workBtn = {
-        x: 711,
-        y: 544,
-        w: 437,
-        h: 290,
-        label: "",
-      };
+    // Draw all buttons
+    drawButton(pantryBtn);
+    drawButton(workBtn);
+    drawButton(ovenBtn);
 
-      const ovenBtn = {
-        x: 1025,
-        y: 522,
-        w: 297,
-        h: 345,
-        label: "",
-      };
-
-      const shopBtn = {
-        x: 100,
-        y: height - 100,
-        w: 100,
-        h: 100,
-        label: "",
-      };
-
-      // Draw all buttons
-      drawButton(pantryBtn);
-      drawButton(workBtn);
-      drawButton(ovenBtn);
-
-      if (day >= 2) {
-        drawButton(shopBtn);
-        image(allimg[57], 25, height - 150, 125, 125); // shop icon
-      }
-
-      // show pantry image when hovered
-      imageMode(CENTER);
-      if (isHover(pantryBtn)) {
-        image(allimg[1], 345, 440, 370, 520);
-      } else if (isHover(ovenBtn)) {
-        image(allimg[2], 1025, 522, 297, 345);
-      } else if (isHover(workBtn)) {
-        image(allimg[33], 711, 544, 437, 290);
-      }
-
-      // ---- Cursor feedback ----
-      // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
-      const over =
-        isHover(workBtn) ||
-        isHover(pantryBtn) ||
-        isHover(ovenBtn) ||
-        isHover(shopBtn);
-      cursor(over ? HAND : ARROW);
-
-      // ------------------------------
-      // Order tickets (left side, stacked upward)
-      // ------------------------------
-      let orderW = 130;
-      let orderH = 130;
-      let orderGap = 0;
-
-      // left side position
-      let startX = 10;
-
-      // this is the BOTTOM ticket position
-      let bottomY = height / 2 + 50;
-
-      imageMode(CORNER);
-      textAlign(CENTER, CENTER);
-      textSize(16);
-      fill(84, 43, 20);
-      noStroke();
-
-      for (let i = 0; i < 3; i++) {
-        let x = startX;
-        let y = bottomY - i * (orderH + orderGap);
-
-        let recipeIndex = dailyOrders[i];
-        let breadImgIndex = getRecipeImageIndex(recipeIndex);
-        let flavourName = recipeNames[recipeIndex];
-
-        // sticky note background
-        image(allimg[59], x, y, orderW, orderH);
-
-        // bread image top middle
-        imageMode(CENTER);
-        image(allimg[breadImgIndex], x + orderW / 2, y + 70, 100, 70);
-
-        // flavour name underneath
-        imageMode(CORNER);
-        textAlign(CENTER, CENTER);
-        textSize(14);
-        fill(84, 43, 20);
-        noStroke();
-        text("Order " + (3 - i), x + orderW / 2, y + 30);
-        text(flavourName, x + orderW / 2, y + 108);
-      }
-
-      if (inst == false) {
-        tut = "Click on recipe instructions ";
-        tut2 = "to find out what to bake!";
-        prevScreen = currentScreen;
-        currentScreen = "popup";
-      }
-
-      if (
-        eng == false &&
-        inst == true &&
-        recp == true &&
-        pan == true &&
-        work == true &&
-        ovn == true
-      ) {
-        tut = "Watch your energy carefully,";
-        tut2 = "and go to sleep when it gets low!";
-        tut3 = "Good luck!";
-        prevScreen = currentScreen;
-        currentScreen = "popup";
-      }
+    // show pantry image when hovered
+    imageMode(CENTER);
+    if (isHover(pantryBtn)) {
+      image(allimg[1], 315, 490, 420, 580);
+    } else if (isHover(ovenBtn)) {
+      image(allimg[2], 1067, 580, 327, 383);
+    } else if (isHover(workBtn)) {
+      image(allimg[33], 717, 604, 490, 317);
     }
+
+    // ---- Cursor feedback ----
+    // If the mouse is over the buttons, show a hand cursor so the player knows it is clickable.
+    const over = isHover(workBtn) || isHover(pantryBtn) || isHover(ovenBtn);
+    cursor(over ? HAND : ARROW);
   }
 }
 
@@ -186,34 +92,23 @@ function drawHome() {
 function homeMousePressed() {
   // Do nothing if video is still playing
   if (!videoFinished) return;
-  let shopBtn;
 
   // For input checks, we only need x,y,w,h (label is optional)
-  const pantryBtn = { x: 345, y: 440, w: 370, h: 520 };
-  const workBtn = { x: 711, y: 544, w: 437, h: 290 };
-  const ovenBtn = { x: 1025, y: 522, w: 297, h: 345 };
-
-  if (day >= 2) {
-    shopBtn = { x: 100, y: height - 100, w: 100, h: 100 };
-  }
+  const pantryBtn = { x: 315, y: 475, w: 240, h: 420 };
+  const workBtn = { x: 710, y: 600, w: 340, h: 240 };
+  const ovenBtn = { x: 1075, y: 565, w: 240, h: 280 };
 
   // If workbench is clicked, go to the workbench screen
   if (isHover(workBtn)) {
-    prevScreen = currentScreen;
     currentScreen = "workbench";
   }
   // If pantry is clicked, go to the pantry screen
   else if (isHover(pantryBtn)) {
-    prevScreen = currentScreen;
     currentScreen = "pantry";
   }
   // If OVEN is clicked, go to the oven screen
   else if (isHover(ovenBtn)) {
-    prevScreen = currentScreen;
     currentScreen = "oven";
-  } else if (day >= 2 && isHover(shopBtn)) {
-    prevScreen = currentScreen;
-    currentScreen = "shop";
   }
 }
 

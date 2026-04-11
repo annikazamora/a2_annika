@@ -53,66 +53,14 @@ function getPantryIngredients() {
       counterName: "flourCounter",
       useOpaqueHitbox: true,
     },
-    {
-      name: "Apple",
-      img: allimg[37],
-      x: width / 4 - 210,
-      y: height / 2 - 85,
-      w: 145,
-      h: 170,
-      counterName: "appleCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Blueberry",
-      img: allimg[38],
-      x: width / 4 - 100,
-      y: height / 2 - 85,
-      w: 145,
-      h: 170,
-      counterName: "blueberryCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Cinnamon",
-      img: allimg[39],
-      x: width / 4 - 210,
-      y: height / 2 + 125,
-      w: 145,
-      h: 170,
-      counterName: "cinnamonCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Sugar",
-      img: allimg[40],
-      x: width / 4 - 100,
-      y: height / 2 + 125,
-      w: 145,
-      h: 170,
-      counterName: "sugarCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Tomato",
-      img: allimg[41],
-      x: (width / 4) * 3 + 10,
-      y: height / 2 + 125,
-      w: 145,
-      h: 170,
-      counterName: "tomatoCounter",
-      useOpaqueHitbox: true,
-    },
   ];
 }
 
 function drawPantry() {
   background(240);
   imageMode(CORNER);
-  image(allimg[31], 0, 0, width, height); // background
-  image(allimg[34], width / 2 - 250, 0, 550, 800); // middle pantry shelf
-  image(allimg[36], 50, height / 2 - 170, 400, 550); //left pantry shelf
-  image(allimg[36], width - 430, height / 2 - 120, 350, 500); // right pantry shelf
+  image(allimg[31], 0, 0, width, height);
+  image(allimg[34], width / 2 - 250, 0, 550, 800);
 
   const ingredients = getPantryIngredients();
 
@@ -137,14 +85,6 @@ function drawPantry() {
   }
 
   screen = "pantry";
-
-  if (pan == false) {
-    tut = "Click on the ingredients   ";
-    tut2 = "to collect them.";
-    tut3 = "";
-    prevScreen = currentScreen;
-    currentScreen = "popup";
-  }
 }
 
 function isMouseOverOpaqueImage(img, x, y, w, h) {
@@ -179,10 +119,6 @@ function pantryMousePressed() {
     if (clicked) {
       incrementIngredientCounter(ingredient.counterName);
       energy -= int(random(4, 8));
-
-      click.setVolume(2);
-      click.stop();
-      click.play();
     }
   }
 }
