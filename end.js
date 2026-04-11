@@ -1,6 +1,7 @@
 function drawEnd() {
   // Background colour for the home screen
   background(180, 225, 220); // soft teal background
+  imageMode(CENTER);
   image(allimg[4], width / 2, height / 2, width, height); // recipe background image
 
   // ---- Title text ----
@@ -9,7 +10,7 @@ function drawEnd() {
   textAlign(CENTER, CENTER);
   text("Congratulations! You made:", width / 2, 280);
   text("Sourdough Bread: " + bread, width / 2, 350);
-  text("Money Earned: $" + bread * 5, width / 2, 420);
+  text("Money Earned: $" + money, width / 2, 420);
 
   const homeBtn = {
     x: width / 3,
@@ -30,19 +31,17 @@ function drawEnd() {
   // Draw all buttons
   drawButton(homeBtn);
   drawButton(sleepBtn);
-
-  currentScreen = "end"; // Ensure currentScreen is set to "end" when drawing this screen
 }
 
 function endMousePressed() {
-  // For input checks, we only need x,y,w,h (label is optional)
   const homeBtn = { x: width / 3, y: 570, w: 340, h: 100 };
   const sleepBtn = { x: width - width / 3, y: 570, w: 340, h: 100 };
 
-  // If home button is clicked, go to the home screen
   if (isHover(homeBtn)) {
     currentScreen = "home";
   } else if (isHover(sleepBtn)) {
+    wbClearBowl();
     currentScreen = "sleep";
+    nightvid.play();
   }
 }

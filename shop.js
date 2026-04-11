@@ -10,6 +10,8 @@
 // drawShop() is called from main.js
 // only when currentScreen === "shop"
 function drawShop() {
+  energy--; // Decrease energy by 1 each frame (60 frames per second, so this is 1 energy per second)
+
   game = true;
   background(235, 223, 226);
   imageMode(CENTER);
@@ -160,6 +162,15 @@ function drawShop() {
       goldenovenBtn.h,
       20,
     );
+  }
+
+  // Tutorial pop-up
+  if (shp == false) {
+    tut = "Buy tools to make your";
+    tut2 = "bakery more efficient!";
+    tut3 = "";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
   }
 }
 
