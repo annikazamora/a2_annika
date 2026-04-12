@@ -12,9 +12,7 @@
 // only when currentScreen === "pantry"
 
 function getPantryIngredients() {
-  energy--; // Decrease energy by 1 each frame (60 frames per second, so this is 1 energy per second)
-
-  return [
+  let ingredients = [
     {
       name: "Starter",
       img: allimg[6],
@@ -55,47 +53,10 @@ function getPantryIngredients() {
       counterName: "flourCounter",
       useOpaqueHitbox: true,
     },
-    {
-      name: "Apple",
-      img: allimg[37],
-      x: width / 4 - 210,
-      y: height / 2 - 85,
-      w: 145,
-      h: 170,
-      counterName: "appleCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Blueberry",
-      img: allimg[38],
-      x: width / 4 - 100,
-      y: height / 2 - 85,
-      w: 145,
-      h: 170,
-      counterName: "blueberryCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Cinnamon",
-      img: allimg[39],
-      x: width / 4 - 210,
-      y: height / 2 + 125,
-      w: 145,
-      h: 170,
-      counterName: "cinnamonCounter",
-      useOpaqueHitbox: true,
-    },
-    {
-      name: "Sugar",
-      img: allimg[40],
-      x: width / 4 - 100,
-      y: height / 2 + 125,
-      w: 145,
-      h: 170,
-      counterName: "sugarCounter",
-      useOpaqueHitbox: true,
-    },
-    {
+  ];
+
+  if (day >= 2) {
+    ingredients.push({
       name: "Tomato",
       img: allimg[41],
       x: (width / 4) * 3 + 10,
@@ -104,13 +65,61 @@ function getPantryIngredients() {
       h: 170,
       counterName: "tomatoCounter",
       useOpaqueHitbox: true,
-    },
-  ];
+    });
+  }
+
+  if (day >= 5) {
+    ingredients.push(
+      {
+        name: "Apple",
+        img: allimg[37],
+        x: width / 4 - 210,
+        y: height / 2 - 85,
+        w: 145,
+        h: 170,
+        counterName: "appleCounter",
+        useOpaqueHitbox: true,
+      },
+      {
+        name: "Blueberry",
+        img: allimg[38],
+        x: width / 4 - 100,
+        y: height / 2 - 85,
+        w: 145,
+        h: 170,
+        counterName: "blueberryCounter",
+        useOpaqueHitbox: true,
+      },
+      {
+        name: "Cinnamon",
+        img: allimg[39],
+        x: width / 4 - 210,
+        y: height / 2 + 125,
+        w: 145,
+        h: 170,
+        counterName: "cinnamonCounter",
+        useOpaqueHitbox: true,
+      },
+      {
+        name: "Sugar",
+        img: allimg[40],
+        x: width / 4 - 100,
+        y: height / 2 + 125,
+        w: 145,
+        h: 170,
+        counterName: "sugarCounter",
+        useOpaqueHitbox: true,
+      },
+    );
+  }
+
+  return ingredients;
 }
 
 function drawPantry() {
   background(240);
   imageMode(CORNER);
+  energy--; // Decrease energy by 1 each frame
   image(allimg[31], 0, 0, width, height); // background
   image(allimg[34], width / 2 - 250, 0, 550, 800); // middle pantry shelf
   image(allimg[36], 50, height / 2 - 170, 400, 550); //left pantry shelf
@@ -181,7 +190,7 @@ function pantryMousePressed() {
 
     if (clicked) {
       incrementIngredientCounter(ingredient.counterName);
-      energy -= int(random(5, 10));
+      energy -= int(random(10, 20));
       click.setVolume(2);
       click.stop();
       click.play();
@@ -191,14 +200,14 @@ function pantryMousePressed() {
 
 function incrementIngredientCounter(counterName) {
   if (counterName === "starterCounter") starterCounter++;
-  else if (counterName === "saltCounter") saltCounter++;
-  else if (counterName === "waterCounter") waterCounter++;
-  else if (counterName === "flourCounter") flourCounter++;
-  else if (counterName === "tomatoCounter") tomatoCounter++;
-  else if (counterName === "appleCounter") appleCounter++;
-  else if (counterName === "blueberryCounter") blueberryCounter++;
-  else if (counterName === "cinnamonCounter") cinnamonCounter++;
-  else if (counterName === "sugarCounter") sugarCounter++;
+  if (counterName === "saltCounter") saltCounter++;
+  if (counterName === "waterCounter") waterCounter++;
+  if (counterName === "flourCounter") flourCounter++;
+  if (counterName === "tomatoCounter") tomatoCounter++;
+  if (counterName === "appleCounter") appleCounter++;
+  if (counterName === "blueberryCounter") blueberryCounter++;
+  if (counterName === "cinnamonCounter") cinnamonCounter++;
+  if (counterName === "sugarCounter") sugarCounter++;
 }
 
 function drawIngredientCounter(ingredient) {
