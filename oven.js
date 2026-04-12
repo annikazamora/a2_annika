@@ -342,21 +342,21 @@ function ovenMousePressed() {
 
       if (bakeTimer >= bakeDuration && bakeTimer <= bakeDuration + burnWindow) {
         breadDone = true;
-        if (currentBreadType === "tomato") {
-          money += 10;
-          bread += 1;
-        } else if (currentBreadType === "apple") {
-          money += 15;
-          bread += 1;
-        } else if (currentBreadType === "blueberry") {
-          money += 15;
-          bread += 1;
-        } else if (currentBreadType === "plain") {
-          money += 5;
-          bread += 1;
+        bread += 1;
+
+        if (day < 8) {
+          if (currentBreadType === "tomato") {
+            money += 10;
+          } else if (currentBreadType === "apple") {
+            money += 15;
+          } else if (currentBreadType === "blueberry") {
+            money += 15;
+          } else if (currentBreadType === "plain") {
+            money += 5;
+          }
+        } else {
+          fulfillOneMatchingOrder(currentBreadType);
         }
-      } else if (bakeTimer > bakeDuration + burnWindow) {
-        breadBurnt = true;
       }
 
       if (breadDone) {

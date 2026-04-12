@@ -190,7 +190,7 @@ function pantryMousePressed() {
 
     if (clicked) {
       incrementIngredientCounter(ingredient.counterName);
-      energy -= int(random(10, 20));
+      energy -= int(random(50, 80));
       click.setVolume(2);
       click.stop();
       click.play();

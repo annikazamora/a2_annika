@@ -274,7 +274,7 @@ function drawWorkbench() {
 // ── Trash-can button ─────────────────────────────────────────────────────────
 function drawWbTrashButton() {
   const w = 260;
-  const h = 300;
+  const h = 350;
   wbTrashBtn = { x: width - 170, y: height - 220, w, h };
   const hover = isHover(wbTrashBtn);
 
