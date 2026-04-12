@@ -357,6 +357,8 @@ function ovenMousePressed() {
         } else {
           fulfillOneMatchingOrder(currentBreadType);
         }
+      } else if (bakeTimer > bakeDuration + burnWindow) {
+        breadBurnt = true;
       }
 
       if (breadDone) {
