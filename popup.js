@@ -3,9 +3,9 @@ function drawPopup() {
   imageMode(CENTER);
   image(allimg[58], width / 2, height / 2, 800, 500); // Popup background image
   fill(84, 43, 20);
-  text(tut, width / 2, height / 2 - 20);
-  text(tut2, width / 2, height / 2 + 20);
-  text(tut3, width / 2, height / 2 + 60);
+  text(tut, width / 2, height / 2 - 40);
+  text(tut2, width / 2, height / 2);
+  text(tut3, width / 2, height / 2 + 40);
 
   const exitBtn = {
     x: 970,
@@ -22,6 +22,16 @@ function drawPopup() {
 function popupMousePressed() {
   const exitBtn = { x: 970, y: 200, w: 30, h: 30 };
 
+  if (
+    isHover(exitBtn) &&
+    prevScreen == "home" &&
+    eng == false &&
+    inst == true
+  ) {
+    eng = true; // Mark the energy tutorial as completed
+    currentScreen = "home";
+  }
+
   if (isHover(exitBtn) && prevScreen == "home" && inst == false) {
     inst = true; // Mark the recipe tutorial as completed
     currentScreen = "home";
@@ -30,6 +40,7 @@ function popupMousePressed() {
   if (isHover(exitBtn) && prevScreen == "recipe" && recp == false) {
     recp = true; // Mark the recipe tutorial as completed
     currentScreen = "recipe";
+    prevScreen = "home";
   }
 
   if (isHover(exitBtn) && prevScreen == "pantry" && pan == false) {
@@ -50,10 +61,5 @@ function popupMousePressed() {
   if (isHover(exitBtn) && prevScreen == "shop" && shp == false) {
     shp = true; // Mark the shop tutorial as completed
     currentScreen = "shop";
-  }
-
-  if (isHover(exitBtn) && prevScreen == "home" && eng == false) {
-    eng = true; // Mark the energy tutorial as completed
-    currentScreen = "home";
   }
 }

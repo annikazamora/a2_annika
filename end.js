@@ -1,4 +1,6 @@
 function drawEnd() {
+  energy--; // Decrease energy by 1 each frame (60 frames per second, so this is 1 energy per second)
+
   // Background colour for the home screen
   background(180, 225, 220); // soft teal background
   imageMode(CENTER);

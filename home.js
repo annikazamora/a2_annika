@@ -96,7 +96,7 @@ function drawHome() {
 
       if (day === 2 && shopDayTwoGlowFrames > 0) {
         // Brief pulse to highlight that the shop has just become available.
-        let radius = shopBtn.w * 3;
+        let radius = shopBtn.w * 4;
         let t = 140;
         for (let r = 0; r < radius; r++) {
           fill(202, 227, 235, t);
@@ -177,6 +177,7 @@ function drawHome() {
     if (inst == false) {
       tut = "Click on recipe instructions ";
       tut2 = "to find out what to bake!";
+      image(allimg[67], width - 250, 250, 100, 250);
       prevScreen = currentScreen;
       currentScreen = "popup";
     }
@@ -184,7 +185,6 @@ function drawHome() {
     if (
       eng == false &&
       inst == true &&
-      recp == true &&
       pan == true &&
       work == true &&
       ovn == true
@@ -192,6 +192,7 @@ function drawHome() {
       tut = "Watch your energy carefully,";
       tut2 = "and go to sleep when it gets low!";
       tut3 = "Good luck!";
+      image(allimg[67], 400, 100, 75, 100);
       prevScreen = currentScreen;
       currentScreen = "popup";
     }

@@ -50,15 +50,7 @@ function drawRecipe() {
     text("Plain Sourdough", 240, 220);
     textSize(25);
     text("Today we are making", 240, 300);
-    text("sourdough bread!", 240, 335);
-
-    text("We have multiple orders,", 240, 400);
-    text("but we might not be able", 240, 435);
-    text("to make them all today.", 240, 470);
-
-    text("Balancing our energy is", 240, 535);
-    text("just as important as", 240, 570);
-    text("filling orders!", 240, 605);
+    text("classic sourdough bread!", 240, 335);
 
     text("Collect the following", 760, 200);
     text("items from the pantry.", 760, 235);
@@ -70,8 +62,8 @@ function drawRecipe() {
 
     text("Combine all the ingredients", 760, 555);
     text("on the workbench, then", 760, 590);
-    text("bake the dough in the oven", 760, 625);
-    text("at 200°C for 6-8 seconds.", 760, 660);
+    text("bake the dough at 200°C", 760, 625);
+    text("for 6-8 seconds.", 760, 660);
   }
 
   // ------------------------------
@@ -163,6 +155,14 @@ function drawRecipe() {
     width / 2 - 100,
     685,
   );
+
+  if (recp == false) {
+    tut = "Take a good look at the ingredients";
+    tut2 = "you need and how to bake it.";
+    tut3 = "Every click uses energy!";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 // ------------------------------

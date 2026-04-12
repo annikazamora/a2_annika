@@ -167,8 +167,8 @@ function drawShop() {
   // Tutorial pop-up
   if (shp == false) {
     tut = "Buy tools to make your";
-    tut2 = "bakery more efficient!";
-    tut3 = "";
+    tut2 = "bakery more efficient";
+    tut3 = "and save energy!";
     prevScreen = currentScreen;
     currentScreen = "popup";
   }

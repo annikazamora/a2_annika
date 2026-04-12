@@ -44,7 +44,7 @@ function drawNavbar() {
   noFill();
   rect(width - 50, 250, 20, 400, 20);
   fill(27, 158, 22); // green money bar
-  rect(width - 50, 250 + 400 - money * 4, 20, money * 4, 20);
+  rect(width - 50, 250 + 400 - money * 1.6, 20, money * 1.6, 20);
 
   // ------------------------------------------------------------
   // Button visuals

@@ -178,7 +178,7 @@ function drawOven() {
 
     if (!goldenoven) {
       // only decrease if NOT golden oven
-      energy -= 0.001; // tiny decrease per frame (adjust as needed)
+      energy -= 1; // tiny decrease per frame (adjust as needed)
     }
 
     textSize(30);
@@ -315,7 +315,7 @@ function ovenMousePressed() {
     breadReadyForEndScreen = false;
 
     if (!goldenoven) {
-      energy -= int(random(1, 4));
+      energy -= int(random(5, 10));
     }
     return;
   }

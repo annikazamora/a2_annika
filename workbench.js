@@ -261,6 +261,14 @@ function drawWorkbench() {
   drawWbMessage();
 
   cursor(wbIsOverIngredient() ? HAND : ARROW);
+
+  if (work == false) {
+    tut = "Click on ingredients to add";
+    tut2 = "them to the bowl! If you make";
+    tut3 = "a mistake, click the trash can.";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 // ── Trash-can button ─────────────────────────────────────────────────────────
@@ -483,13 +491,12 @@ function drawWbBakeButton() {
   rect(btn.x, btn.y, btn.w, btn.h, 10);
 
   imageMode(CENTER);
-  if (allimg[18]) image(allimg[18], btn.x - btn.w / 2 + 30, btn.y, 45, 35);
 
   fill(255);
   noStroke();
-  textSize(14);
+  textSize(25);
   textAlign(CENTER, CENTER);
-  text("BAKE BREAD!", btn.x + 15, btn.y);
+  text("BAKE BREAD!", btn.x, btn.y - 5);
 
   rectMode(CORNER);
   imageMode(CORNER);
@@ -634,7 +641,7 @@ function workbenchMousePressed() {
         Kneading.play();
       }
 
-      let energyLoss = floor(random(1, 4));
+      let energyLoss = floor(random(5, 10));
 
       if (pin) {
         energyLoss = max(1, energyLoss - 1);
