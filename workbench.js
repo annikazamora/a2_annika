@@ -49,7 +49,7 @@ function wbActiveRecipeName() {
 }
 
 function wbAllRecipes() {
-  const recipes = [BREAD_RECIPE, MILK_BREAD_RECIPE];
+  const recipes = [BREAD_RECIPE];
 
   if (day >= 2) {
     recipes.push(TOMATO_BREAD_RECIPE);

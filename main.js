@@ -126,8 +126,15 @@ function getAvailableRecipesForDay() {
   }
 }
 
-function generateSingleOrder() {
-  let availableRecipes = getAvailableRecipesForDay();
+function generateSingleOrder(excludeRecipeIndex = -1) {
+  let availableRecipes = getAvailableRecipesForDay().filter(
+    (recipeIndex) => recipeIndex !== excludeRecipeIndex,
+  );
+
+  if (availableRecipes.length === 0) {
+    availableRecipes = getAvailableRecipesForDay();
+  }
+
   let randomIndex = floor(random(availableRecipes.length));
   return availableRecipes[randomIndex];
 }
@@ -167,7 +174,7 @@ function fulfillOneMatchingOrder(breadType) {
         money += 5;
       }
 
-      dailyOrders[i] = generateSingleOrder();
+      dailyOrders[i] = generateSingleOrder(bakedRecipeIndex);
       return true;
     }
   }
