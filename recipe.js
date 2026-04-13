@@ -141,7 +141,6 @@ function drawRecipe() {
     text("- Salt: " + saltCounter + "/1", 760, 405);
     text("- Apples: " + appleCounter + "/3", 760, 455);
     text("- Cinnamon: " + cinnamonCounter + "/1", 760, 505);
-    text("- Sugar: " + sugarCounter + "/2", 760, 555);
 
     text("Combine all ingredients,", 760, 610);
     text("bake at 200°C for 6-8 seconds.", 760, 645);
