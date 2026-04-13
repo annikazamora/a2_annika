@@ -9,6 +9,8 @@
 //   allimg[9]  -> bowl with dough (9.png)
 
 // ── Recipes ─────────────────────────────────────────────────────────────────
+let wbMixed = false;
+
 const BREAD_RECIPE = { flour: 3, water: 2, starter: 1, salt: 1 };
 const MILK_BREAD_RECIPE = { flour: 4, water: 1, starter: 2, salt: 1 };
 const TOMATO_BREAD_RECIPE = {
@@ -43,9 +45,9 @@ function wbActiveRecipe() {
 }
 
 function wbActiveRecipeName() {
-  if (day >= 5) return "🫐 BLUEBERRY CRUMBLE";
-  if (day >= 2) return "🍅 TOMATO BREAD";
-  return level >= 2 ? "🥛 MILK BREAD" : "🍞 SOURDOUGH";
+  if (day >= 5) return "BLUEBERRY CRUMBLE";
+  if (day >= 2) return "TOMATO BREAD";
+  return level >= 2 ? "MILK BREAD" : "SOURDOUGH";
 }
 
 function wbAllRecipes() {
@@ -73,30 +75,27 @@ function wbRefreshLevel() {
 
 // ── Styling map ─────────────────────────────────────────────────────────────
 const INGREDIENT_STYLES = {
-  flour: { bg: [245, 225, 185], label: "FLOUR", emoji: "🌾", imgIndex: 11 },
-  water: { bg: [180, 220, 255], label: "WATER", emoji: "💧", imgIndex: 13 },
-  starter: { bg: [245, 225, 185], label: "STARTER", emoji: "🫙", imgIndex: 6 },
-  salt: { bg: [240, 240, 240], label: "SALT", emoji: "🧂", imgIndex: 5 },
+  flour: { bg: [245, 225, 185], label: "FLOUR", imgIndex: 11 },
+  water: { bg: [180, 220, 255], label: "WATER", imgIndex: 13 },
+  starter: { bg: [245, 225, 185], label: "STARTER", imgIndex: 6 },
+  salt: { bg: [240, 240, 240], label: "SALT", imgIndex: 5 },
   tomato: {
     bg: [210, 80, 70],
     label: "SUNDRIED TOMATOES",
-    emoji: "🍅",
     imgIndex: 41,
   },
   blueberry: {
     bg: [90, 110, 200],
     label: "BLUEBERRY",
-    emoji: "🫐",
     imgIndex: 38,
   },
-  sugar: { bg: [245, 245, 245], label: "SUGAR", emoji: "🍚", imgIndex: 40 },
+  sugar: { bg: [245, 245, 245], label: "SUGAR", imgIndex: 40 },
   cinnamon: {
     bg: [160, 95, 55],
     label: "CINNAMON",
-    emoji: "🤎",
     imgIndex: 39,
   },
-  apple: { bg: [210, 60, 50], label: "APPLE", emoji: "🍎", imgIndex: 37 },
+  apple: { bg: [210, 60, 50], label: "APPLE", imgIndex: 37 },
 };
 
 // ── Workbench state ──────────────────────────────────────────────────────────
@@ -231,7 +230,10 @@ function drawWorkbench() {
   const wbImgY = height * 0.62;
   if (allimg[14]) image(allimg[14], width / 2, wbImgY, wbImgW, wbImgH);
 
-  if (pin && allimg[55]) {
+  if (standmixer && allimg[49]) {
+    imageMode(CENTER);
+    image(allimg[49], width / 2 - 290, wbImgY - 245, 260, 260);
+  } else if (pin && allimg[55]) {
     imageMode(CENTER);
     image(allimg[55], width / 2 - 250, wbImgY - 180, 180, 90);
   }
@@ -496,7 +498,11 @@ function drawWbBakeButton() {
   noStroke();
   textSize(25);
   textAlign(CENTER, CENTER);
-  text("BAKE BREAD!", btn.x, btn.y - 5);
+  text(
+    day >= 4 ? (wbMixed ? "BAKE BREAD!" : "MIX") : "BAKE BREAD!",
+    btn.x,
+    btn.y - 5,
+  );
 
   rectMode(CORNER);
   imageMode(CORNER);
@@ -517,7 +523,7 @@ function drawWbRecipeBtn() {
   textSize(13);
   textAlign(CENTER, CENTER);
   text(
-    wbShowRecipe ? "✕ CLOSE RECIPE" : "📋 VIEW RECIPE",
+    wbShowRecipe ? "✕ CLOSE RECIPE" : "VIEW RECIPE",
     btn.x + btn.w / 2,
     btn.y + btn.h / 2,
   );
@@ -578,13 +584,22 @@ function wbGetRecipeType(recipe) {
   if (recipe === APPLE_CINNAMON_BREAD_RECIPE) return "apple";
   return "plain";
 }
+function startMixStage() {
+  mixProgress = 0;
+  mixDragging = false;
+  mixLastAngle = null;
+  mixEnergyTick = 0;
+}
+
 function wbClearBowl() {
   wbContents = {};
   wbDragging = null;
   wbMessage = "";
   wbMessageTimer = 0;
+  wbMixed = false;
   _wbRebuildIngredients();
 }
+
 // ── Input handlers ────────────────────────────────────────────────────────────
 function workbenchMousePressed() {
   if (isHover(wbTrashBtn)) {
@@ -601,6 +616,7 @@ function workbenchMousePressed() {
       mouseY < ing.y + ing.h / 2
     ) {
       wbContents[ing.name] = (wbContents[ing.name] || 0) + 1;
+      wbMixed = false;
       ing.count--;
 
       if (ing.name === "flour") flourCounter = max(0, flourCounter - 1);
@@ -644,9 +660,14 @@ function workbenchMousePressed() {
       let energyLoss = floor(random(5, 10));
 
       if (pin) {
-        energyLoss = max(1, energyLoss - 1);
+        energyLoss -= 5;
       }
 
+      if (standmixer) {
+        energyLoss -= 7;
+      }
+
+      energyLoss = max(1, energyLoss);
       energy = max(0, energy - energyLoss);
 
       wbMessage = `Added ${INGREDIENT_STYLES[ing.name].emoji} ${INGREDIENT_STYLES[ing.name].label}! (-${energyLoss} ⚡)`;
@@ -671,15 +692,23 @@ function workbenchKeyPressed() {
 function wbCheckRecipe() {
   const matchedRecipe = wbGetMatchedRecipe();
 
-  if (matchedRecipe) {
-    currentBreadType = wbGetRecipeType(matchedRecipe);
-    ingredientsDone = true;
-    wbContents = {};
-    _wbRebuildIngredients();
-    currentScreen = "oven";
+  if (!matchedRecipe) {
+    wbMessage = "Wrong ingredients! Keep trying.";
+    wbMessageTimer = 140;
     return;
   }
 
-  wbMessage = "Wrong ingredients! Keep trying.";
-  wbMessageTimer = 140;
+  currentBreadType = wbGetRecipeType(matchedRecipe);
+  ingredientsDone = true;
+
+  if (day >= 4 && !wbMixed) {
+    startMixStage();
+    currentScreen = "mix";
+    return;
+  }
+
+  wbContents = {};
+  _wbRebuildIngredients();
+  wbMixed = false;
+  currentScreen = "oven";
 }

@@ -23,8 +23,8 @@
 let currentScreen = "splash"; // "home" | "pantry" | "workbench" | "oven" | "recipe"
 let bread = 0; // game state variable to track how many breads the player has (starts at 0)
 let energy = 10800; // timer for the day, starts at 10800 (3 minutes) and counts down to 0, when it hits 0, the day ends and player goes to sleep screen
-let day = 1; // game state variable to track the current day (starts at 1)
-let money = 10;
+let day = 0; // game state variable to track the current day (starts at 1)
+let money = 0;
 let game = false;
 let daytimer = 250; // timer to show the day 1 image for a few seconds before showing the home screen
 
@@ -254,6 +254,7 @@ function draw() {
   else if (currentScreen === "shop") drawShop();
   else if (currentScreen === "end") drawEnd();
   else if (currentScreen === "sleep") drawSleep();
+  else if (currentScreen === "mix") drawMix();
 
   // Only draw navbar if video has finished playing
   if (videoFinished && game === true) {
@@ -291,6 +292,7 @@ function mousePressed() {
   else if (currentScreen === "shop") shopMousePressed();
   else if (currentScreen === "end") endMousePressed();
   else if (currentScreen === "sleep") sleepMousePressed();
+  else if (currentScreen === "mix") mixMousePressed();
 
   if (!(currentScreen === "home" && daytimer > 0)) {
     navbarMousePressed();
@@ -322,16 +324,19 @@ function keyPressed() {
   else if (currentScreen === "shop") shopKeyPressed();
   else if (currentScreen === "end") endKeyPressed();
   else if (currentScreen === "sleep") sleepKeyPressed();
+  else if (currentScreen === "mix") mixKeyPressed();
 
   navbarKeyPressed();
 }
 
 function mouseDragged() {
   if (currentScreen === "workbench") workbenchMouseDragged();
+  else if (currentScreen === "mix") mixMouseDragged();
 }
 
 function mouseReleased() {
   if (currentScreen === "workbench") workbenchMouseReleased();
+  else if (currentScreen === "mix") mixMouseReleased();
 }
 
 // ------------------------------------------------------------
