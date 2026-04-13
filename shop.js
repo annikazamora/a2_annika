@@ -85,7 +85,7 @@ function drawShop() {
     pinBtn.x + pinBtn.w / 2,
     pinBtn.y + pinBtn.h + 75,
   );
-  text("making dough by 5", pinBtn.x + pinBtn.w / 2, pinBtn.y + pinBtn.h + 100);
+  text("making dough to 5", pinBtn.x + pinBtn.w / 2, pinBtn.y + pinBtn.h + 100);
   text(
     "$75",
     goldenovenBtn.x + goldenovenBtn.w / 2,
@@ -97,7 +97,7 @@ function drawShop() {
     goldenovenBtn.y + goldenovenBtn.h + 75,
   );
   text(
-    "baking bread by 10",
+    "baking bread to 10",
     goldenovenBtn.x + goldenovenBtn.w / 2,
     goldenovenBtn.y + goldenovenBtn.h + 100,
   );
@@ -112,7 +112,7 @@ function drawShop() {
     standmixerBtn.y + standmixerBtn.h + 75,
   );
   text(
-    "making dough by 7",
+    "making dough to 7",
     standmixerBtn.x + standmixerBtn.w / 2,
     standmixerBtn.y + standmixerBtn.h + 100,
   );

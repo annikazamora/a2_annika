@@ -96,8 +96,8 @@ function drawHome() {
 
       if (day === 2 && shopDayTwoGlowFrames > 0) {
         // Brief pulse to highlight that the shop has just become available.
-        let radius = shopBtn.w * 4;
-        let t = 140;
+        let radius = shopBtn.w * 6;
+        let t = 150;
         for (let r = 0; r < radius; r++) {
           fill(202, 227, 235, t);
           rect(shopBtn.x - 15, shopBtn.y + 15, r, r, 20);
@@ -193,6 +193,22 @@ function drawHome() {
       tut2 = "and go to sleep when it gets low!";
       tut3 = "Good luck!";
       image(allimg[67], 400, 100, 75, 100);
+      prevScreen = currentScreen;
+      currentScreen = "popup";
+    }
+
+    if (day == 2 && day2 == false && eng == true) {
+      tut = "New flavors are available";
+      tut2 = "in the recipe book, and the shop";
+      tut3 = "is open for business!";
+      prevScreen = currentScreen;
+      currentScreen = "popup";
+    }
+
+    if (day == 8 && lev3 == false) {
+      tut = "For your last 3 days you need to";
+      tut2 = "fulfill orders! Check the sticky";
+      tut3 = "notes on the left for what to make.";
       prevScreen = currentScreen;
       currentScreen = "popup";
     }

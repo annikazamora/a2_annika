@@ -23,8 +23,8 @@
 let currentScreen = "splash"; // "home" | "pantry" | "workbench" | "oven" | "recipe"
 let bread = 0; // game state variable to track how many breads the player has (starts at 0)
 let energy = 10800; // timer for the day, starts at 10800 (3 minutes) and counts down to 0, when it hits 0, the day ends and player goes to sleep screen
-let day = 0; // game state variable to track the current day (starts at 1)
-let money = 0;
+let day = 3; // game state variable to track the current day (starts at 1)
+let money = 10;
 let game = false;
 let daytimer = 250; // timer to show the day 1 image for a few seconds before showing the home screen
 
@@ -67,6 +67,9 @@ let work = false;
 let ovn = false;
 let shp = false;
 let eng = false;
+let lev2 = false;
+let lev3 = false;
+let day2 = false;
 
 // Sound effects
 let ambiance;
@@ -81,6 +84,7 @@ let Water;
 let Starter;
 let Salt;
 let Kneading;
+let fire_sound;
 
 // Tool upgrades
 let pin = false;
@@ -111,6 +115,7 @@ function preload() {
   Starter = loadSound("libraries/assets/audio/Starter.mp3");
   Salt = loadSound("libraries/assets/audio/Salt.mp3");
   Kneading = loadSound("libraries/assets/audio/Kneeding_Dough.mp3");
+  fire_sound = loadSound("libraries/assets/audio/fire_sound.mp3");
 
   // Load a custom font before the sketch starts
   font = loadFont("libraries/assets/font/playpen.ttf");

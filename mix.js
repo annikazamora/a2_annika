@@ -37,15 +37,14 @@ function drawMix() {
   strokeWeight(16);
   ellipse(mixBowl.x, mixBowl.y, 260, 260);
 
+  let progressRatio = constrain(mixProgress / mixGoal, 0, 1);
+
   stroke(120, 75, 30);
-  arc(
-    mixBowl.x,
-    mixBowl.y,
-    260,
-    260,
-    -HALF_PI,
-    -HALF_PI + TWO_PI * constrain(mixProgress / mixGoal, 0, 1),
-  );
+  if (progressRatio >= 1) {
+    ellipse(mixBowl.x, mixBowl.y, 260, 260);
+  } else {
+    arc(mixBowl.x, mixBowl.y, 260, 260, -90, -90 + 360 * progressRatio, OPEN);
+  }
 
   noStroke();
   fill(84, 43, 20);

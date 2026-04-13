@@ -271,13 +271,21 @@ function drawWorkbench() {
     prevScreen = currentScreen;
     currentScreen = "popup";
   }
+
+  if (day == 4 && lev2 == false && work == true) {
+    tut = "Your assistant quit!";
+    tut2 = "You have to knead the dough";
+    tut3 = "yourself now by dragging it.";
+    prevScreen = currentScreen;
+    currentScreen = "popup";
+  }
 }
 
 // ── Trash-can button ─────────────────────────────────────────────────────────
 function drawWbTrashButton() {
-  const w = 260;
+  const w = 300;
   const h = 350;
-  wbTrashBtn = { x: width - 170, y: height - 220, w, h };
+  wbTrashBtn = { x: width - 170, y: height - 270, w, h };
   const hover = isHover(wbTrashBtn);
 
   if (
@@ -657,7 +665,7 @@ function workbenchMousePressed() {
         Kneading.play();
       }
 
-      let energyLoss = floor(random(5, 10));
+      let energyLoss = floor(random(50, 80));
 
       if (pin) {
         energyLoss -= 5;
