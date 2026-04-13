@@ -74,6 +74,7 @@ function splashMousePressed() {
     prevScreen = currentScreen;
     currentScreen = "home";
     ambiance.play();
+    ambiance.setVolume(0.3);
     ambiance.loop();
     openday.play();
   }
